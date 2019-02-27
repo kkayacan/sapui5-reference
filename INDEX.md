@@ -1,9 +1,14 @@
 # Core
 
-## Bootstrap
+### Bootstrap
 [Load the SAPUI5 framework](src/sapui5-walkthrough/webapp/index.html#L7-L17)
 
-## Internationalization (i18n)
+### Component
+1. [Define application metadata](src/sapui5-walkthrough/webapp/Component.js#L11-L13) - e.g. app descriptor file
+2. [Call overridden init function of base component](src/sapui5-walkthrough/webapp/Component.js#L17) - obligatory
+3. [Set models or other application defaults](src/sapui5-walkthrough/webapp/Component.js#L20-L26)
+
+### Internationalization (i18n)
 1. [Define text id and actual text in i18n.properties file](src/sapui5-walkthrough/webapp/i18n/i18n.properties#L7) - use {i} as placeholders
 2. [Define resource model path in app descriptor](src/sapui5-walkthrough/webapp/manifest.json#L39-L44)
 3. Access text in controller
@@ -15,7 +20,7 @@ OR
 
 # Model
 
-## JSON
+### JSON
 1. [Load module](src/sapui5-walkthrough/webapp/Component.js#L3) [into controller](src/sapui5-walkthrough/webapp/Component.js#L6)
 2. [Create new JSON data](src/sapui5-walkthrough/webapp/Component.js#L20-L24)
 3. [Create model object](src/sapui5-walkthrough/webapp/Component.js#L25)
@@ -28,6 +33,6 @@ OR
 
 # Controls
 
-## Message Toast
+### Message Toast
 1. [Load module into controller](src/sapui5-walkthrough/webapp/controller/HelloPanel.controller.js#L3-L4)
 2. [Display message](src/sapui5-walkthrough/webapp/controller/HelloPanel.controller.js#L16)
