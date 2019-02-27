@@ -3,6 +3,16 @@
 ## Bootstrap
 [Load the SAPUI5 framework](src/sapui5-walkthrough/webapp/index.html#L7-L17)
 
+## Internationalization (i18n)
+1. [Define text id and actual text in i18n.properties file](src/sapui5-walkthrough/webapp/i18n/i18n.properties#L7) - use {i} as placeholders
+2. [Define resource model path in app descriptor](src/sapui5-walkthrough/webapp/manifest.json#L39-L44)
+3. Access text in controller
+    1. [Get resource bundle object](src/sapui5-walkthrough/webapp/controller/HelloPanel.controller.js#L11)
+    2. [Get text string](src/sapui5-walkthrough/webapp/controller/HelloPanel.controller.js#L13)  
+OR  
+4. Access text in view
+    1. [Bind text path](src/sapui5-walkthrough/webapp/view/HelloPanel.view.xml#L15)
+
 # Model
 
 ## JSON
@@ -11,7 +21,7 @@
 3. [Create model object](src/sapui5-walkthrough/webapp/Component.js#L25)
 4. [Set JSON data into model object](src/sapui5-walkthrough/webapp/Component.js#L26)
 5. [Bind model property in view](src/sapui5-walkthrough/webapp/view/HelloPanel.view.xml#L23)
-6. [Set compatibility version to allow complex binding](src/sapui5-walkthrough/webapp/index.html#L15) - e.g. mixing constant values and multiple binding paths like:
+6. [Set compatibility version to allow complex binding](src/sapui5-walkthrough/webapp/index.html#L15) - to mix constant values and multiple binding paths like:
    ```
    description="Hello {/recipient/name}"
    ```
