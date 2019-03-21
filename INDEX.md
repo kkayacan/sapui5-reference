@@ -28,7 +28,7 @@ OR
 
 # Model
 
-### JSON
+### JSON (Dynamic instantiation)
 1. [Load module](src/sapui5-walkthrough/webapp/Component.js#L3) [into controller](src/sapui5-walkthrough/webapp/Component.js#L6)
 2. [Create new JSON data](src/sapui5-walkthrough/webapp/Component.js#L20-L24)
 3. [Create model object](src/sapui5-walkthrough/webapp/Component.js#L25)
@@ -53,3 +53,10 @@ OR
 ### Message Toast
 1. [Load module into controller](src/sapui5-walkthrough/webapp/controller/HelloPanel.controller.js#L3-L4)
 2. [Display message](src/sapui5-walkthrough/webapp/controller/HelloPanel.controller.js#L16)
+
+## User Input
+
+### Input (Static)
+1. [Set value binding](src/sapui5-walkthrough/webapp/view/HelloPanel.view.xml#L23)
+2. [Set binding update trigger](src/sapui5-walkthrough/webapp/view/HelloPanel.view.xml#L24)
+3. [Set width](src/sapui5-walkthrough/webapp/view/HelloPanel.view.xml#L25)
