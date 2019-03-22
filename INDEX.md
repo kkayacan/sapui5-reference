@@ -53,6 +53,11 @@ OR
 4. [Place control aggregation](src/sapui5-walkthrough/webapp/view/HelloPanel.view.xml#L49-L73)
 5. [Set relative path of item property](src/sapui5-walkthrough/webapp/view/HelloPanel.view.xml#L57)
 
+### Currency
+1. [Set value and currency key paths](src/sapui5-walkthrough/webapp/view/InvoiceList.view.xml#L63)
+2. [Set number type as currency](src/sapui5-walkthrough/webapp/view/InvoiceList.view.xml#L64)
+3. [Set format options](src/sapui5-walkthrough/webapp/view/InvoiceList.view.xml#L65-67)
+
 # Controls
 
 ## Action
