@@ -44,6 +44,15 @@ OR
 4. Access text in view
     1. [Bind text path](src/sapui5-walkthrough/webapp/view/HelloPanel.view.xml#L15)
 
+# Data Binding
+
+### Aggregation binding
+1. [Place parent control](src/sapui5-walkthrough/webapp/view/HelloPanel.view.xml#L5-L74)
+2. [Set absolute path of aggregation items](src/sapui5-walkthrough/webapp/view/HelloPanel.view.xml#L10)
+3. [Set sorting and grouping](src/sapui5-walkthrough/webapp/view/HelloPanel.view.xml#L11-L14)
+4. [Place control aggregation](src/sapui5-walkthrough/webapp/view/HelloPanel.view.xml#L49-L73)
+5. [Set relative path of item property](src/sapui5-walkthrough/webapp/view/HelloPanel.view.xml#L57)
+
 # Controls
 
 ## Action
