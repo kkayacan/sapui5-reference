@@ -41,6 +41,14 @@ OR
 
 # Controls
 
+## Action
+
+### Button (Static)
+1. [Set icon](src/sapui5-walkthrough/webapp/view/HelloPanel.view.xml#L14)
+2. [Set text](src/sapui5-walkthrough/webapp/view/HelloPanel.view.xml#L15)
+3. [Set click handler](src/sapui5-walkthrough/webapp/view/HelloPanel.view.xml#L16)
+4. [Define click handler function](src/sapui5-walkthrough/webapp/controller/HelloPanel.controller.js#L19-L21)
+
 ## Container
 
 ### Page
@@ -59,4 +67,4 @@ OR
 ### Input (Static)
 1. [Set value binding](src/sapui5-walkthrough/webapp/view/HelloPanel.view.xml#L23)
 2. [Set binding update trigger](src/sapui5-walkthrough/webapp/view/HelloPanel.view.xml#L24)
-3. [Set width](src/sapui5-walkthrough/webapp/view/HelloPanel.view.xml#L25)
+3. [Set layout width](src/sapui5-walkthrough/webapp/view/HelloPanel.view.xml#L25)
