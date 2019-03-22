@@ -57,24 +57,32 @@ OR
 ## Container
 
 ### Page
-1. [Set page](src/sapui5-walkthrough/webapp/view/Overview.view.xml#L5-L15)
+1. [Place page control](src/sapui5-walkthrough/webapp/view/Overview.view.xml#L5-L15)
 2. [Set header content](src/sapui5-walkthrough/webapp/view/Overview.view.xml#L6-L10)
 3. [Set main content](src/sapui5-walkthrough/webapp/view/Overview.view.xml#L11-L14) - aggregation
 
 ### Panel
-1. [Set panel](src/sapui5-walkthrough/webapp/view/HelloPanel.view.xml#L5-L30)
+1. [Place panel control](src/sapui5-walkthrough/webapp/view/HelloPanel.view.xml#L5-L30)
 2. [Set header text](src/sapui5-walkthrough/webapp/view/HelloPanel.view.xml#L6)
 3. [Set CSS width](src/sapui5-walkthrough/webapp/view/HelloPanel.view.xml#L8)
 4. [Set expandable/collapsible](src/sapui5-walkthrough/webapp/view/HelloPanel.view.xml#L9)
-5. [Set expanded state](src/sapui5-walkthrough/webapp/view/HelloPanel.view.xml#L10)
+5. [Set initial expanded state](src/sapui5-walkthrough/webapp/view/HelloPanel.view.xml#L10)
+
+## Display
+
+### Icon (static)
+1. [Load core library](src/sapui5-walkthrough/webapp/view/HelloDialog.fragment.xml#L3)
+2. [Place icon control](src/sapui5-walkthrough/webapp/view/HelloDialog.fragment.xml#L8-L11)
+3. [Set icon image](src/sapui5-walkthrough/webapp/view/HelloDialog.fragment.xml#L9) - Browse [icon gallery](https://sapui5.hana.ondemand.com/test-resources/sap/m/demokit/iconExplorer/webapp/index.html)
+4. [Set CSS font-size](src/sapui5-walkthrough/webapp/view/HelloDialog.fragment.xml#L10)
 
 ## Popup
 
 ### Dialog (in reusable fragment)
 1. [Create fragment](src/sapui5-walkthrough/webapp/view/HelloDialog.fragment.xml)
-2. [Set dialog control](src/sapui5-walkthrough/webapp/view/HelloDialog.fragment.xml#L4-L18)
+2. [Place dialog control](src/sapui5-walkthrough/webapp/view/HelloDialog.fragment.xml#L4-L18)
 3. [Set title](src/sapui5-walkthrough/webapp/view/HelloDialog.fragment.xml#L6)
-4. [Set content](src/sapui5-walkthrough/webapp/view/HelloDialog.fragment.xml#L7-L14)
+4. [Set content](src/sapui5-walkthrough/webapp/view/HelloDialog.fragment.xml#L7-L12)
 5. [Define close button](src/sapui5-walkthrough/webapp/view/HelloDialog.fragment.xml#L13-L17)
 6. [Set close handler](src/sapui5-walkthrough/webapp/view/HelloDialog.fragment.xml#L16)
 7. [Create a separate controller for dialog](src/sapui5-walkthrough/webapp/controller/HelloDialog.js) - to make it reusable across views
