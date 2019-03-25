@@ -58,6 +58,15 @@ OR
 2. [Set number type as currency](src/sapui5-walkthrough/webapp/view/InvoiceList.view.xml#L64)
 3. [Set format options](src/sapui5-walkthrough/webapp/view/InvoiceList.view.xml#L65-67)
 
+### Custom formatter
+1. [Define formatter function](src/sapui5-walkthrough/webapp/model/formatter.js#L4-L16)
+2. [Load module](src/sapui5-walkthrough/webapp/controller/InvoiceList.controller.js#L4) [into controller](src/sapui5-walkthrough/webapp/controller/InvoiceList.controller.js#L7)
+3. [Set formatter module to a controller property](src/sapui5-walkthrough/webapp/controller/InvoiceList.controller.js#L10)
+4. [Call formatter function in XML view](src/sapui5-walkthrough/webapp/view/InvoiceList.view.xml#L58)
+
+### Expression binding
+[Write JavaScript code in XML view with equals sign](src/sapui5-walkthrough/webapp/view/InvoiceList.view.xml#L70)
+
 # Controls
 
 ## Action
