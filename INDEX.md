@@ -67,6 +67,18 @@ OR
 ### Expression binding
 [Write JavaScript code in XML view with equals sign](src/sapui5-walkthrough/webapp/view/InvoiceList.view.xml#L70)
 
+### Filter (Dynamic)
+1. [Set id of aggregation parent](src/sapui5-walkthrough/webapp/view/InvoiceList.view.xml#L6)
+2. [Load modules into controller](src/sapui5-walkthrough/webapp/controller/InvoiceList.controller.js#L5-L7)
+3. [Create an array of filter objects](src/sapui5-walkthrough/webapp/controller/InvoiceList.controller.js#L23)
+4. [Get binding object of aggregation](src/sapui5-walkthrough/webapp/controller/InvoiceList.controller.js#L27-L28)
+5. [Set filter array into binding object](src/sapui5-walkthrough/webapp/controller/InvoiceList.controller.js#L29)
+
+### Sort & Group
+1. [Add sorter object to aggregation binding](src/sapui5-walkthrough/webapp/view/InvoiceList.view.xml#L11-L14)
+2. [Set relative sorting path](src/sapui5-walkthrough/webapp/view/InvoiceList.view.xml#L12)
+3. [Set group to true](src/sapui5-walkthrough/webapp/view/InvoiceList.view.xml#L13) - if grouping required
+
 # Controls
 
 ## Action
