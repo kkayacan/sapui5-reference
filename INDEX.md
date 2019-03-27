@@ -133,6 +133,12 @@ OR
 3. [Set icon image](src/sapui5-walkthrough/webapp/view/HelloDialog.fragment.xml#L9) - Browse [icon gallery](https://sapui5.hana.ondemand.com/test-resources/sap/m/demokit/iconExplorer/webapp/index.html)
 4. [Set CSS font-size](src/sapui5-walkthrough/webapp/view/HelloDialog.fragment.xml#L10)
 
+### ObjectHeader (static)
+1. [Place control](src/sapui5-walkthrough/webapp/view/Detail.view.xml#L10-L26)
+2. [Set number and unit](src/sapui5-walkthrough/webapp/view/Detail.view.xml#L13-L14)
+3. [Set title](src/sapui5-walkthrough/webapp/view/Detail.view.xml#L16)
+4. [Set attributes](src/sapui5-walkthrough/webapp/view/Detail.view.xml#L17-L25)
+
 ## Popup
 
 ### Dialog (in reusable fragment)
