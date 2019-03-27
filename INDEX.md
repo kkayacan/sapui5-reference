@@ -36,6 +36,13 @@
 2. [Introduce CSS file as a resource](src/sapui5-walkthrough/webapp/manifest.json#L80-L82)
 3. [Set class attribute of control with custom CSS class](src/sapui5-walkthrough/webapp/view/App.view.xml#L8)
 
+### Custom control
+1. [Create control](src/sapui5-walkthrough/webapp/control/ProductRating.js) with init, renderer and other required functions
+2. [Load custom control library](src/sapui5-walkthrough/webapp/view/Detail.view.xml#L5) into view
+3. [Place custom control](src/sapui5-walkthrough/webapp/view/Detail.view.xml#L27-L30) in view
+4. [Set handler for fired custom event](src/sapui5-walkthrough/webapp/view/Detail.view.xml#L30)
+5. [Define event handler function of custom event](src/sapui5-walkthrough/webapp/controller/Detail.controller.js#L42-L47)
+
 # Model
 
 ### JSON (Dynamic instantiation)
