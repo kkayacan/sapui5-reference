@@ -16,6 +16,21 @@
 2. [Call overridden init function of base component](src/sapui5-walkthrough/webapp/Component.js#L17) - obligatory
 3. [Set models or other application defaults](src/sapui5-walkthrough/webapp/Component.js#L20-L26)
 
+### Routing (In app navigation)
+1. Set routing [configuration](src/sapui5-walkthrough/webapp/manifest.json#L51-L58), [routes](src/sapui5-walkthrough/webapp/manifest.json#L59-L67) and [targets](src/sapui5-walkthrough/webapp/manifest.json#L68-L77) in manifest
+2. [Add parameter path](src/sapui5-walkthrough/webapp/manifest.json#L64) if data is passed accross views. Format is "/{parameterName}".
+2. [Initialize router](src/sapui5-walkthrough/webapp/Component.js#L36) in component
+3. [Get router object](src/sapui5-walkthrough/webapp/controller/InvoiceList.controller.js#L33)
+4. [Set parameter](src/sapui5-walkthrough/webapp/controller/InvoiceList.controller.js#L33) and [navigate to a router](src/sapui5-walkthrough/webapp/controller/InvoiceList.controller.js#L34-L36)
+5. In next controller, [attach PatternMatched event handler to the route](src/sapui5-walkthrough/webapp/controller/Detail.controller.js#L18-L19)
+6. [Get value of passed parameter](src/sapui5-walkthrough/webapp/controller/Detail.controller.js#L25) in PatternMatched event handler
+
+### Route back
+1. [Add navigation button to page](src/sapui5-walkthrough/webapp/view/Detail.view.xml#L8)
+2. [Set handler for navigation button](src/sapui5-walkthrough/webapp/view/Detail.view.xml#L9)
+3. [Load history module](src/sapui5-walkthrough/webapp/controller/Detail.controller.js#L3) [into controller](src/sapui5-walkthrough/webapp/controller/Detail.controller.js#L7)
+4. [Define navigation button handler](src/sapui5-walkthrough/webapp/controller/Detail.controller.js#L30-L40)
+
 ### Custom CSS
 1. [Create CSS to be used](src/sapui5-walkthrough/webapp/css/style.css)
 2. [Introduce CSS file as a resource](src/sapui5-walkthrough/webapp/manifest.json#L80-L82)
