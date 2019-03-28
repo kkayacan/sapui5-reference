@@ -127,6 +127,10 @@ OR
 
 ## Display
 
+### FormattedText (static)
+1. [Place control](src/sapui5-walkthrough/webapp/view/HelloPanel.view.xml#L26-L28)
+2. [Set html content](src/sapui5-walkthrough/webapp/view/HelloPanel.view.xml#L27)
+
 ### Icon (static)
 1. [Load core library](src/sapui5-walkthrough/webapp/view/HelloDialog.fragment.xml#L3)
 2. [Place icon control](src/sapui5-walkthrough/webapp/view/HelloDialog.fragment.xml#L8-L11)
@@ -138,6 +142,15 @@ OR
 2. [Set number and unit](src/sapui5-walkthrough/webapp/view/Detail.view.xml#L13-L14)
 3. [Set title](src/sapui5-walkthrough/webapp/view/Detail.view.xml#L16)
 4. [Set attributes](src/sapui5-walkthrough/webapp/view/Detail.view.xml#L17-L25)
+
+## List
+
+### Table
+1. [Place table control](src/sapui5-walkthrough/webapp/view/InvoiceList.view.xml#L5-L74)
+2. [Set items aggregation binding](src/sapui5-walkthrough/webapp/view/InvoiceList.view.xml#L9-L15)
+3. [Place header toolbar](src/sapui5-walkthrough/webapp/view/InvoiceList.view.xml#L16-L22)
+4. [Define column properties](src/sapui5-walkthrough/webapp/view/InvoiceList.view.xml#L23-L48)
+5. [Place items aggregation](src/sapui5-walkthrough/webapp/view/InvoiceList.view.xml#L49-L73)
 
 ## Popup
 
