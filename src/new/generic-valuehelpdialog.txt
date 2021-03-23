@@ -1,0 +1,239 @@
+<core:FragmentDefinition xmlns="sap.ui.comp.valuehelpdialog" xmlns:m="sap.m" xmlns:fb="sap.ui.comp.filterbar" xmlns:core="sap.ui.core">
+	<ValueHelpDialog title="{help>/title}" ok=".onOkValueHelp" cancel=".onCancelValueHelp" afterClose=".onAfterCloseValueHelp"
+		supportMultiselect="false" supportRanges="false" key="{help>/key}" descriptionKey="{help>/descriptionKey}">
+		<filterBar>
+			<fb:FilterBar advancedMode="true" showGoOnFB="true" search="onSearchValueHelp"/>
+		</filterBar>
+	</ValueHelpDialog>
+</core:FragmentDefinition>
+
+
+
+
+<mvc:View controllerName="com.socar.centralpr.controller.Object" xmlns="sap.m" xmlns:mvc="sap.ui.core.mvc" xmlns:semantic="sap.f.semantic"
+	xmlns:footerbar="sap.ushell.ui.footerbar" xmlns:core="sap.ui.core" xmlns:f="sap.ui.layout.form" xmlns:l="sap.ui.layout"
+	xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
+							                                        <Input type="Text" value="{Saknr}" editable="{= ${objectView>/mode} !== 'display'}" showValueHelp="true"
+																		valueHelpRequest="onValueHelpRequest" app:entitySet="EtAccountSet" app:key="Saknr" app:descriptionKey="Txt20"
+																		app:param1="IvBeCoCode|BeCoCode|panelItem" app:filter1="Ktopl|Text" app:liveChange="onLiveChangeValueHelpDialog" app:column1="Saknr"
+																		app:column2="Txt20" app:objectContainer="panelItem"/>
+																	<Input type="Text" value="{Kostl}" editable="{= ${objectView>/mode} !== 'display'}" showValueHelp="true"
+																		valueHelpRequest="onValueHelpRequest" app:entitySet="EtCostcenterSet" app:key="Kostl" app:descriptionKey="Ltext"
+																		app:param1="IvBeCoCode|BeCoCode|panelItem" app:filter1="Kokrs|Text" app:filter2="Datab|Date" app:filter3="Datbi|Date"
+																		app:filter4="Verak|Text" app:liveChange="onLiveChangeValueHelpDialog" app:column1="Kostl" app:column2="Ltext" app:column3="Datab"
+																		app:column4="Datbi" app:column5="Verak" app:objectContainer="panelItem"/>
+																	<Input type="Text" value="{Aufnr}" editable="{= ${objectView>/mode} !== 'display'}" showValueHelp="true"
+																		valueHelpRequest="onValueHelpRequest" app:entitySet="EtInternalOrderSet" app:key="Aufnr" app:descriptionKey="Ktext"
+																		app:param1="IvBeCoCode|BeCoCode|panelItem" app:filter1="Auart|Text" app:filter2="Kokrs|Text" app:liveChange="onLiveChangeValueHelpDialog"
+																		app:column1="Aufnr" app:column2="Ktext" app:column3="Auart" app:column4="Kokrs" app:objectContainer="panelItem"/>
+																	<Input type="Text" value="{PsPosid}" editable="{= ${objectView>/mode} !== 'display'}" showValueHelp="true"
+																		valueHelpRequest="onValueHelpRequest" app:entitySet="EtWbsElementSet" app:key="Posid" app:descriptionKey="Postu"
+																		app:param1="IvBeCoCode|BeCoCode|panelItem" app:filter1="Poski|Text" app:filter2="Pspid|Text" app:liveChange="onLiveChangeValueHelpDialog"
+																		app:column1="Posid" app:column2="Postu" app:column3="Poski" app:column4="Pspid" app:objectContainer="panelItem"/>
+																	<Input type="Text" value="{Anln1}" editable="{= ${objectView>/mode} !== 'display'}" showValueHelp="true"
+																		valueHelpRequest="onValueHelpRequest" app:entitySet="EtAssetSet" app:key="Anln1" app:descriptionKey="Txt50"
+																		app:param1="IvBeCoCode|BeCoCode|panelItem" app:filter1="Anlkl|Text" app:filter2="Aktiv|Date" app:liveChange="onLiveChangeValueHelpDialog"
+																		app:column1="Anln1" app:column2="Anln2" app:column3="Anlkl" app:column4="Txt50" app:column5="Aktiv" app:objectContainer="panelItem"
+																		app:onAfterSelect="onAfterSelectAnln1"/>
+																	<Input type="Text" value="{Anln2}" editable="{= ${objectView>/mode} !== 'display'}" showValueHelp="true"
+																		valueHelpRequest="onValueHelpRequestAnln2" app:entitySet="EtAssetSet" app:key="Anln2" app:descriptionKey="Txt50" app:value="Anln1"
+																		app:param1="IvBeCoCode|BeCoCode|panelItem" app:param2="Anln1|Anln1" app:filter1="Anlkl|Text" app:filter2="Aktiv|Date"
+																		app:liveChange="onLiveChangeValueHelpDialog" app:column1="Anln1" app:column2="Anln2" app:column3="Anlkl" app:column4="Txt50"
+																		app:column5="Aktiv" app:objectContainer="panelItem" app:onAfterSelect="onAfterSelectAnln1"/>
+</mvc:View>
+
+
+
+
+
+		onValueHelpRequest: function(oEvent) {
+
+			this._oInput = oEvent.getSource();
+			var aCols = [];
+			var aFilterItems = [];
+			this._oInput.getAggregation("customData").forEach(function(oCustomData) {
+				if (oCustomData.getKey().includes("column")) {
+					aCols.push({
+						label: this.getResourceBundle().getText(oCustomData.getValue()),
+						template: oCustomData.getValue()
+					});
+				} else if (oCustomData.getKey().includes("filter")) {
+					var aParts = oCustomData.getValue().split("|");
+					aFilterItems.push({
+						path: aParts[0],
+						type: aParts[1]
+					});
+				}
+			}.bind(this));
+
+			this.oColModel = new JSONModel({
+				cols: aCols
+			});
+			this.oHelpModel = new JSONModel({
+				title: this.getResourceBundle().getText(this._oInput.data("key")),
+				key: this._oInput.data("key"),
+				descriptionKey: this._oInput.data("descriptionKey"),
+				list: []
+			});
+			this.oHelpModel.setSizeLimit(100000);
+			this.setModel(this.oHelpModel, "help");
+
+			this._oValueHelpDialog = sap.ui.xmlfragment("com.socar.centralpr.fragment.ValueHelpDialog", this);
+			this.getView().addDependent(this._oValueHelpDialog);
+
+			// this._oValueHelpDialog.setRangeKeyFields([{
+			// 	label: "Product",
+			// 	key: "ProductId",
+			// 	type: "string",
+			// 	typeInstance: new typeString({}, {
+			// 		maxLength: 7
+			// 	})
+			// }]);
+
+			var oFilterBar = this._oValueHelpDialog.getFilterBar();
+			oFilterBar.setBasicSearch(new sap.m.SearchField({
+				showSearchButton: false,
+				placeholder: this.getResourceBundle().getText("basicSearchPlaceholder"),
+				liveChange: this.onLiveChangeValueHelp.bind(this)
+			}));
+
+			aFilterItems.forEach(function(oFilterItem) {
+				var oFilterControl;
+				switch (oFilterItem.type) {
+					case "Date":
+						oFilterControl = new sap.m.DateRangeSelection(oFilterItem.type + oFilterItem.path, {
+							name: oFilterItem.path
+						});
+						break;
+					default:
+						oFilterControl = new sap.m.Input(oFilterItem.type + oFilterItem.path, {
+							name: oFilterItem.path
+						});
+				}
+				oFilterBar.addFilterGroupItem(new sap.ui.comp.filterbar.FilterGroupItem({
+					groupName: "__$INTERNAL$",
+					name: oFilterItem.path,
+					label: this.getResourceBundle().getText(oFilterItem.path),
+					visibleInFilterBar: true
+				}).setControl(oFilterControl));
+			}.bind(this));
+
+			this._oValueHelpDialog.getTableAsync().then(function(oTable) {
+				oTable.setModel(this.oHelpModel);
+				oTable.setModel(this.oColModel, "columns");
+
+				if (oTable.bindRows) {
+					oTable.bindAggregation("rows", "/list");
+				}
+
+				// if (oTable.bindItems) {
+				// 	oTable.bindAggregation("items", "/ProductCollection", function() {
+				// 		return new sap.m.ColumnListItem({
+				// 			cells: aCols.map(function(column) {
+				// 				return new sap.m.Label({
+				// 					text: "{" + column.template + "}"
+				// 				});
+				// 			})
+				// 		});
+				// 	});
+				// }
+
+				this._oValueHelpDialog.update();
+			}.bind(this));
+
+			// this._oValueHelpDialog.setTokens(this._oMultiInput.getTokens());
+			this._oValueHelpDialog.open();
+		},
+
+		onSearchValueHelp: function(oEvent) {
+			sap.ui.core.BusyIndicator.hide();
+			var sObjectContainer = this._oInput.data("objectContainer");
+			if (sObjectContainer) {
+				this._objectContainer = this.byId(sObjectContainer).getBindingContext().getObject();
+			} else {
+				this._objectContainer = this._oInput.getBindingContext().getObject();
+			}
+			var aFilters = [];
+			this._oInput.getAggregation("customData").forEach(function(oCustomData) {
+				if (oCustomData.getKey().includes("param")) {
+					var aParts = oCustomData.getValue().split("|");
+					if (this._objectContainer[aParts[1]]) {
+						aFilters.push(new Filter(aParts[0], FilterOperator.EQ, this._objectContainer[aParts[1]]));
+					}
+				}
+			}.bind(this));
+			oEvent.getParameter("selectionSet").forEach(function(oControl) {
+				if (oControl.getValue()) {
+					if (oControl.getId().includes("Date")) {
+						aFilters.push(new Filter(oControl.getName(), FilterOperator.BT, sap.ui.core.format.DateFormat.getDateInstance({
+							pattern: "yyyy-MM-dd"
+						}).format(oControl.getDateValue()), sap.ui.core.format.DateFormat.getDateInstance({
+							pattern: "yyyy-MM-dd"
+						}).format(oControl.getSecondDateValue())));
+					} else {
+						aFilters.push(new Filter(oControl.getName(), FilterOperator.EQ, oControl.getValue()));
+					}
+				}
+			});
+			this.getModel().read("/" + this._oInput.data("entitySet"), {
+				filters: aFilters,
+				success: function(oData, response) {
+					var aResult = oData.results.map(function(oItem, index) {
+						var oNewItem = {
+							key: oItem[this._oInput.data("key")],
+							descriptionKey: oItem[this._oInput.data("descriptionKey")]
+						};
+						$.each(oItem, function(key, value) {
+							if (value instanceof Date) {
+								oNewItem[key] = sap.ui.core.format.DateFormat.getDateInstance({
+									pattern: "dd.MM.yyyy"
+								}).format(value);
+							} else {
+								oNewItem[key] = value;
+							}
+						});
+						return oNewItem;
+					}.bind(this));
+					this.getModel("help").getData().list = aResult;
+					this.getModel("help").refresh(true);
+					sap.ui.core.BusyIndicator.hide();
+				}.bind(this),
+				error: function(oError) {
+					sap.ui.core.BusyIndicator.hide();
+				}
+			});
+		},
+
+		onLiveChangeValueHelp: function(oEvent) {
+			var sQuery = oEvent.getParameter("newValue");
+			this._oValueHelpDialog.getTableAsync().then(function(oTable) {
+				oTable.getBinding("rows").filter(new Filter(this._oInput.data("descriptionKey"), FilterOperator.Contains, sQuery));
+			}.bind(this));
+		},
+
+		onCancelValueHelp: function() {
+			this._oValueHelpDialog.close();
+		},
+
+		onOkValueHelp: function(oEvent) {
+			var aTokens = oEvent.getParameter("tokens");
+			if (this._oInput.data("onAfterSelect")) {
+				this[this._oInput.data("onAfterSelect")](oEvent);
+			} else {
+				this._oInput.setValue(aTokens[0].getKey());
+			}
+			this._oValueHelpDialog.close();
+		},
+
+		onAfterCloseValueHelp: function() {
+			this._oValueHelpDialog.destroy();
+		},
+
+		onAfterSelectAnln1: function(oEvent) {
+			var sBindingPath = this._oInput.getBindingContext().getPath();
+			this._oValueHelpDialog.getTableAsync().then(function(oTable) {
+				var oSelectedRow = oTable.getRows()[oTable.getSelectedIndex() - oTable.getFirstVisibleRow()].getBindingContext().getObject();
+				this.getModel().setProperty(sBindingPath + "/Anln1", oSelectedRow.Anln1);
+				this.getModel().setProperty(sBindingPath + "/Anln2", oSelectedRow.Anln2);
+			}.bind(this));
+		},
