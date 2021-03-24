@@ -1,6 +1,6 @@
 <core:FragmentDefinition xmlns="sap.ui.comp.valuehelpdialog" xmlns:m="sap.m" xmlns:fb="sap.ui.comp.filterbar" xmlns:core="sap.ui.core">
 	<ValueHelpDialog title="{help>/title}" ok=".onOkValueHelp" cancel=".onCancelValueHelp" afterClose=".onAfterCloseValueHelp"
-		supportMultiselect="false" supportRanges="false" key="{help>/key}" descriptionKey="{help>/descriptionKey}">
+		supportMultiselect="true" supportRanges="false" key="{help>/key}" descriptionKey="{help>/descriptionKey}">
 		<filterBar>
 			<fb:FilterBar advancedMode="true" showGoOnFB="true" search="onSearchValueHelp"/>
 		</filterBar>
@@ -13,33 +13,37 @@
 <mvc:View controllerName="com.socar.centralpr.controller.Object" xmlns="sap.m" xmlns:mvc="sap.ui.core.mvc" xmlns:semantic="sap.f.semantic"
 	xmlns:footerbar="sap.ushell.ui.footerbar" xmlns:core="sap.ui.core" xmlns:f="sap.ui.layout.form" xmlns:l="sap.ui.layout"
 	xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
-							                                        <Input type="Text" value="{Saknr}" editable="{= ${objectView>/mode} !== 'display'}" showValueHelp="true"
-																		valueHelpRequest="onValueHelpRequest" app:entitySet="EtAccountSet" app:key="Saknr" app:descriptionKey="Txt20"
-																		app:param1="IvBeCoCode|BeCoCode|panelItem" app:filter1="Ktopl|Text" app:liveChange="onLiveChangeValueHelpDialog" app:column1="Saknr"
-																		app:column2="Txt20" app:objectContainer="panelItem"/>
-																	<Input type="Text" value="{Kostl}" editable="{= ${objectView>/mode} !== 'display'}" showValueHelp="true"
-																		valueHelpRequest="onValueHelpRequest" app:entitySet="EtCostcenterSet" app:key="Kostl" app:descriptionKey="Ltext"
-																		app:param1="IvBeCoCode|BeCoCode|panelItem" app:filter1="Kokrs|Text" app:filter2="Datab|Date" app:filter3="Datbi|Date"
-																		app:filter4="Verak|Text" app:liveChange="onLiveChangeValueHelpDialog" app:column1="Kostl" app:column2="Ltext" app:column3="Datab"
-																		app:column4="Datbi" app:column5="Verak" app:objectContainer="panelItem"/>
-																	<Input type="Text" value="{Aufnr}" editable="{= ${objectView>/mode} !== 'display'}" showValueHelp="true"
-																		valueHelpRequest="onValueHelpRequest" app:entitySet="EtInternalOrderSet" app:key="Aufnr" app:descriptionKey="Ktext"
-																		app:param1="IvBeCoCode|BeCoCode|panelItem" app:filter1="Auart|Text" app:filter2="Kokrs|Text" app:liveChange="onLiveChangeValueHelpDialog"
-																		app:column1="Aufnr" app:column2="Ktext" app:column3="Auart" app:column4="Kokrs" app:objectContainer="panelItem"/>
-																	<Input type="Text" value="{PsPosid}" editable="{= ${objectView>/mode} !== 'display'}" showValueHelp="true"
-																		valueHelpRequest="onValueHelpRequest" app:entitySet="EtWbsElementSet" app:key="Posid" app:descriptionKey="Postu"
-																		app:param1="IvBeCoCode|BeCoCode|panelItem" app:filter1="Poski|Text" app:filter2="Pspid|Text" app:liveChange="onLiveChangeValueHelpDialog"
-																		app:column1="Posid" app:column2="Postu" app:column3="Poski" app:column4="Pspid" app:objectContainer="panelItem"/>
-																	<Input type="Text" value="{Anln1}" editable="{= ${objectView>/mode} !== 'display'}" showValueHelp="true"
-																		valueHelpRequest="onValueHelpRequest" app:entitySet="EtAssetSet" app:key="Anln1" app:descriptionKey="Txt50"
-																		app:param1="IvBeCoCode|BeCoCode|panelItem" app:filter1="Anlkl|Text" app:filter2="Aktiv|Date" app:liveChange="onLiveChangeValueHelpDialog"
-																		app:column1="Anln1" app:column2="Anln2" app:column3="Anlkl" app:column4="Txt50" app:column5="Aktiv" app:objectContainer="panelItem"
-																		app:onAfterSelect="onAfterSelectAnln1"/>
-																	<Input type="Text" value="{Anln2}" editable="{= ${objectView>/mode} !== 'display'}" showValueHelp="true"
-																		valueHelpRequest="onValueHelpRequestAnln2" app:entitySet="EtAssetSet" app:key="Anln2" app:descriptionKey="Txt50" app:value="Anln1"
-																		app:param1="IvBeCoCode|BeCoCode|panelItem" app:param2="Anln1|Anln1" app:filter1="Anlkl|Text" app:filter2="Aktiv|Date"
-																		app:liveChange="onLiveChangeValueHelpDialog" app:column1="Anln1" app:column2="Anln2" app:column3="Anlkl" app:column4="Txt50"
-																		app:column5="Aktiv" app:objectContainer="panelItem" app:onAfterSelect="onAfterSelectAnln1"/>
+									<MultiInput id="multiInputMatnr" editable="{= ${objectView>/mode} !== 'display'}" showValueHelp="true" valueHelpRequest="onValueHelpRequest"
+										app:model="pr" app:entitySet="EtMaterialSet" app:key="Matnr" app:descriptionKey="Maktx" app:filter1="Mtart|Text" app:filter2="Matkl|Text"
+										app:liveChange="onLiveChangeValueHelpDialog" app:column1="Matnr" app:column2="Maktx" app:column3="Mtart" app:column4="Matkl"
+										app:column5="Wgbez"/>
+							        <Input type="Text" value="{Saknr}" editable="{= ${objectView>/mode} !== 'display'}" showValueHelp="true"
+										valueHelpRequest="onValueHelpRequest" app:entitySet="EtAccountSet" app:key="Saknr" app:descriptionKey="Txt20"
+										app:param1="IvBeCoCode|BeCoCode|panelItem" app:filter1="Ktopl|Text" app:liveChange="onLiveChangeValueHelpDialog" app:column1="Saknr"
+										app:column2="Txt20" app:objectContainer="panelItem"/>
+									<Input type="Text" value="{Kostl}" editable="{= ${objectView>/mode} !== 'display'}" showValueHelp="true"
+										valueHelpRequest="onValueHelpRequest" app:entitySet="EtCostcenterSet" app:key="Kostl" app:descriptionKey="Ltext"
+										app:param1="IvBeCoCode|BeCoCode|panelItem" app:filter1="Kokrs|Text" app:filter2="Datab|Date" app:filter3="Datbi|Date"
+										app:filter4="Verak|Text" app:liveChange="onLiveChangeValueHelpDialog" app:column1="Kostl" app:column2="Ltext" app:column3="Datab"
+										app:column4="Datbi" app:column5="Verak" app:objectContainer="panelItem"/>
+									<Input type="Text" value="{Aufnr}" editable="{= ${objectView>/mode} !== 'display'}" showValueHelp="true"
+										valueHelpRequest="onValueHelpRequest" app:entitySet="EtInternalOrderSet" app:key="Aufnr" app:descriptionKey="Ktext"
+										app:param1="IvBeCoCode|BeCoCode|panelItem" app:filter1="Auart|Text" app:filter2="Kokrs|Text" app:liveChange="onLiveChangeValueHelpDialog"
+										app:column1="Aufnr" app:column2="Ktext" app:column3="Auart" app:column4="Kokrs" app:objectContainer="panelItem"/>
+									<Input type="Text" value="{PsPosid}" editable="{= ${objectView>/mode} !== 'display'}" showValueHelp="true"
+										valueHelpRequest="onValueHelpRequest" app:entitySet="EtWbsElementSet" app:key="Posid" app:descriptionKey="Postu"
+										app:param1="IvBeCoCode|BeCoCode|panelItem" app:filter1="Poski|Text" app:filter2="Pspid|Text" app:liveChange="onLiveChangeValueHelpDialog"
+										app:column1="Posid" app:column2="Postu" app:column3="Poski" app:column4="Pspid" app:objectContainer="panelItem"/>
+									<Input type="Text" value="{Anln1}" editable="{= ${objectView>/mode} !== 'display'}" showValueHelp="true"
+										valueHelpRequest="onValueHelpRequest" app:entitySet="EtAssetSet" app:key="Anln1" app:descriptionKey="Txt50"
+										app:param1="IvBeCoCode|BeCoCode|panelItem" app:filter1="Anlkl|Text" app:filter2="Aktiv|Date" app:liveChange="onLiveChangeValueHelpDialog"
+										app:column1="Anln1" app:column2="Anln2" app:column3="Anlkl" app:column4="Txt50" app:column5="Aktiv" app:objectContainer="panelItem"
+										app:onAfterSelect="onAfterSelectAnln1"/>
+									<Input type="Text" value="{Anln2}" editable="{= ${objectView>/mode} !== 'display'}" showValueHelp="true"
+										valueHelpRequest="onValueHelpRequestAnln2" app:entitySet="EtAssetSet" app:key="Anln2" app:descriptionKey="Txt50" app:value="Anln1"
+										app:param1="IvBeCoCode|BeCoCode|panelItem" app:param2="Anln1|Anln1" app:filter1="Anlkl|Text" app:filter2="Aktiv|Date"
+										app:liveChange="onLiveChangeValueHelpDialog" app:column1="Anln1" app:column2="Anln2" app:column3="Anlkl" app:column4="Txt50"
+										app:column5="Aktiv" app:objectContainer="panelItem" app:onAfterSelect="onAfterSelectAnln1"/>
 </mvc:View>
 
 
@@ -78,7 +82,7 @@
 			this.oHelpModel.setSizeLimit(100000);
 			this.setModel(this.oHelpModel, "help");
 
-			this._oValueHelpDialog = sap.ui.xmlfragment("com.socar.centralpr.fragment.ValueHelpDialog", this);
+			this._oValueHelpDialog = sap.ui.xmlfragment("com.socar.stock.fragment.ValueHelpDialog", this);
 			this.getView().addDependent(this._oValueHelpDialog);
 
 			// this._oValueHelpDialog.setRangeKeyFields([{
@@ -151,7 +155,10 @@
 			if (sObjectContainer) {
 				this._objectContainer = this.byId(sObjectContainer).getBindingContext().getObject();
 			} else {
-				this._objectContainer = this._oInput.getBindingContext().getObject();
+				var oInputBindingContext = this._oInput.getBindingContext();
+				if (oInputBindingContext) {
+					this._objectContainer = oInputBindingContext.getObject();
+				}
 			}
 			var aFilters = [];
 			this._oInput.getAggregation("customData").forEach(function(oCustomData) {
@@ -175,7 +182,13 @@
 					}
 				}
 			});
-			this.getModel().read("/" + this._oInput.data("entitySet"), {
+			var sModelName = this._oInput.data("model");
+			if(sModelName) {
+				var oModel = this.getModel(sModelName);
+			} else {
+				oModel = this.getModel();
+			}
+			oModel.read("/" + this._oInput.data("entitySet"), {
 				filters: aFilters,
 				success: function(oData, response) {
 					var aResult = oData.results.map(function(oItem, index) {
@@ -220,7 +233,13 @@
 			if (this._oInput.data("onAfterSelect")) {
 				this[this._oInput.data("onAfterSelect")](oEvent);
 			} else {
+				if(this._oValueHelpDialog.getSupportMultiselect()) {
+					aTokens.forEach(function(oToken){
+						this._oInput.addToken(oToken);
+					}.bind(this));
+				} else {
 				this._oInput.setValue(aTokens[0].getKey());
+				}
 			}
 			this._oValueHelpDialog.close();
 		},
