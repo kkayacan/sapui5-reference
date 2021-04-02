@@ -1,11 +1,12 @@
 <core:FragmentDefinition xmlns="sap.ui.comp.valuehelpdialog" xmlns:m="sap.m" xmlns:fb="sap.ui.comp.filterbar" xmlns:core="sap.ui.core">
 	<ValueHelpDialog title="{help>/title}" ok=".onOkValueHelp" cancel=".onCancelValueHelp" afterClose=".onAfterCloseValueHelp"
-		supportMultiselect="true" supportRanges="false" key="{help>/key}" descriptionKey="{help>/descriptionKey}">
+		supportMultiselect="false" supportRanges="false" key="{help>/key}" descriptionKey="{help>/descriptionKey}">
 		<filterBar>
 			<fb:FilterBar advancedMode="true" showGoOnFB="true" search="onSearchValueHelp"/>
 		</filterBar>
 	</ValueHelpDialog>
 </core:FragmentDefinition>
+
 
 
 
@@ -44,6 +45,13 @@
 										app:param1="IvBeCoCode|BeCoCode|panelItem" app:param2="Anln1|Anln1" app:filter1="Anlkl|Text" app:filter2="Aktiv|Date"
 										app:liveChange="onLiveChangeValueHelpDialog" app:column1="Anln1" app:column2="Anln2" app:column3="Anlkl" app:column4="Txt50"
 										app:column5="Aktiv" app:objectContainer="panelItem" app:onAfterSelect="onAfterSelectAnln1"/>
+		<Button id="buttonContractRef" text="{i18n>addContractRef}" press="onPressAction" app:supportMultiselect="true"
+			app:entitySet="EtContractSet" app:key="_key" app:descriptionKey="_all" app:filter1="IvBesys|Select|PE,Petkim;S4,Socar"
+			app:filter2="Externalreferenceid|Text" app:filter3="Lifnr|Text" app:filter4="Waers|Text" app:filter5="Matnr|Text"
+			app:liveChange="onLiveChangeValueHelpDialog" app:liveChangeKey="Txz01" app:column1="Ebeln" app:column2="Ebelp"
+			app:column3="Externalreferenceid" app:column4="Lifnr" app:column5="Waers" app:column6="Matnr" app:column7="Txz01"
+			app:onDataReceived="onDataReceivedContract" app:onAfterSelect="onAfterSelectContract"/>
+
 </mvc:View>
 
 
@@ -65,11 +73,21 @@
 					var aParts = oCustomData.getValue().split("|");
 					aFilterItems.push({
 						path: aParts[0],
-						type: aParts[1]
+						type: aParts[1],
+						items: aParts[2]
 					});
 				}
 			}.bind(this));
-
+			aCols.push({
+				label: "",
+				template: "_key",
+				width: "0rem"
+			});
+			aCols.push({
+				label: "",
+				template: "_all",
+				width: "0rem"
+			});
 			this.oColModel = new JSONModel({
 				cols: aCols
 			});
@@ -77,12 +95,13 @@
 				title: this.getResourceBundle().getText(this._oInput.data("key")),
 				key: this._oInput.data("key"),
 				descriptionKey: this._oInput.data("descriptionKey"),
-				list: []
+				list: [],
+				searchResults: []
 			});
 			this.oHelpModel.setSizeLimit(100000);
 			this.setModel(this.oHelpModel, "help");
 
-			this._oValueHelpDialog = sap.ui.xmlfragment("com.socar.stock.fragment.ValueHelpDialog", this);
+			this._oValueHelpDialog = sap.ui.xmlfragment("com.socar.centralpr.fragment.ValueHelpDialog", this);
 			this.getView().addDependent(this._oValueHelpDialog);
 
 			// this._oValueHelpDialog.setRangeKeyFields([{
@@ -109,6 +128,18 @@
 							name: oFilterItem.path
 						});
 						break;
+					case "Select":
+						oFilterControl = new sap.m.Select(oFilterItem.type + oFilterItem.path, {
+							name: oFilterItem.path
+						});
+						oFilterItem.items.split(";").forEach(function(oSelectItem) {
+							var aPair = oSelectItem.split(",");
+							oFilterControl.addItem(new sap.ui.core.Item({
+								key: aPair[0],
+								text: this.getResourceBundle().getText(aPair[1])
+							}));
+						}.bind(this));
+						break;
 					default:
 						oFilterControl = new sap.m.Input(oFilterItem.type + oFilterItem.path, {
 							name: oFilterItem.path
@@ -130,20 +161,12 @@
 					oTable.bindAggregation("rows", "/list");
 				}
 
-				// if (oTable.bindItems) {
-				// 	oTable.bindAggregation("items", "/ProductCollection", function() {
-				// 		return new sap.m.ColumnListItem({
-				// 			cells: aCols.map(function(column) {
-				// 				return new sap.m.Label({
-				// 					text: "{" + column.template + "}"
-				// 				});
-				// 			})
-				// 		});
-				// 	});
-				// }
-
 				this._oValueHelpDialog.update();
 			}.bind(this));
+
+			if (this._oInput.data("supportMultiselect")) {
+				this._oValueHelpDialog.setSupportMultiselect(true);
+			}
 
 			// this._oValueHelpDialog.setTokens(this._oMultiInput.getTokens());
 			this._oValueHelpDialog.open();
@@ -155,10 +178,7 @@
 			if (sObjectContainer) {
 				this._objectContainer = this.byId(sObjectContainer).getBindingContext().getObject();
 			} else {
-				var oInputBindingContext = this._oInput.getBindingContext();
-				if (oInputBindingContext) {
-					this._objectContainer = oInputBindingContext.getObject();
-				}
+				this._objectContainer = this._oInput.getBindingContext().getObject();
 			}
 			var aFilters = [];
 			this._oInput.getAggregation("customData").forEach(function(oCustomData) {
@@ -169,28 +189,30 @@
 					}
 				}
 			}.bind(this));
-			oEvent.getParameter("selectionSet").forEach(function(oControl) {
-				if (oControl.getValue()) {
-					if (oControl.getId().includes("Date")) {
+			var aSelectionSet = oEvent.getParameter("selectionSet");
+			aSelectionSet.forEach(function(oControl) {
+				if (oControl.getId().includes("Date")) {
+					if (oControl.getValue()) {
 						aFilters.push(new Filter(oControl.getName(), FilterOperator.BT, sap.ui.core.format.DateFormat.getDateInstance({
 							pattern: "yyyy-MM-dd"
 						}).format(oControl.getDateValue()), sap.ui.core.format.DateFormat.getDateInstance({
 							pattern: "yyyy-MM-dd"
 						}).format(oControl.getSecondDateValue())));
-					} else {
+					}
+				} else if (oControl.getId().includes("Select")) {
+					if (oControl.getSelectedKey()) {
+						aFilters.push(new Filter(oControl.getName(), FilterOperator.EQ, oControl.getSelectedKey()));
+					}
+				} else {
+					if (oControl.getValue()) {
 						aFilters.push(new Filter(oControl.getName(), FilterOperator.EQ, oControl.getValue()));
 					}
 				}
 			});
-			var sModelName = this._oInput.data("model");
-			if(sModelName) {
-				var oModel = this.getModel(sModelName);
-			} else {
-				oModel = this.getModel();
-			}
-			oModel.read("/" + this._oInput.data("entitySet"), {
+			this.getModel().read("/" + this._oInput.data("entitySet"), {
 				filters: aFilters,
 				success: function(oData, response) {
+
 					var aResult = oData.results.map(function(oItem, index) {
 						var oNewItem = {
 							key: oItem[this._oInput.data("key")],
@@ -208,6 +230,9 @@
 						return oNewItem;
 					}.bind(this));
 					this.getModel("help").getData().list = aResult;
+					if (this._oInput.data("onDataReceived")) {
+						this[this._oInput.data("onDataReceived")](aSelectionSet);
+					}
 					this.getModel("help").refresh(true);
 					sap.ui.core.BusyIndicator.hide();
 				}.bind(this),
@@ -219,9 +244,14 @@
 
 		onLiveChangeValueHelp: function(oEvent) {
 			var sQuery = oEvent.getParameter("newValue");
+			if (this._oInput.data("liveChangeKey")) {
+				var sLiveChangeKey = this._oInput.data("liveChangeKey");
+			} else {
+				sLiveChangeKey = this._oInput.data("descriptionKey");
+			}
 			this._oValueHelpDialog.getTableAsync().then(function(oTable) {
-				oTable.getBinding("rows").filter(new Filter(this._oInput.data("descriptionKey"), FilterOperator.Contains, sQuery));
-			}.bind(this));
+				oTable.getBinding("rows").filter(new Filter(sLiveChangeKey, FilterOperator.Contains, sQuery));
+			});
 		},
 
 		onCancelValueHelp: function() {
@@ -229,16 +259,16 @@
 		},
 
 		onOkValueHelp: function(oEvent) {
-			var aTokens = oEvent.getParameter("tokens");
 			if (this._oInput.data("onAfterSelect")) {
 				this[this._oInput.data("onAfterSelect")](oEvent);
 			} else {
-				if(this._oValueHelpDialog.getSupportMultiselect()) {
-					aTokens.forEach(function(oToken){
+				var aTokens = oEvent.getParameter("tokens");
+				if (this._oValueHelpDialog.getSupportMultiselect()) {
+					aTokens.forEach(function(oToken) {
 						this._oInput.addToken(oToken);
 					}.bind(this));
 				} else {
-				this._oInput.setValue(aTokens[0].getKey());
+					this._oInput.setValue(aTokens[0].getKey());
 				}
 			}
 			this._oValueHelpDialog.close();
@@ -246,6 +276,25 @@
 
 		onAfterCloseValueHelp: function() {
 			this._oValueHelpDialog.destroy();
+		},
+
+		onBeforeLoadValueHelp: function(oEvent) {
+			this._bindItemPanel(oEvent.getSource().getBindingContext().getPath());
+		},
+
+		onDataReceivedContract: function(aSelectionSet) {
+			var sSystem = aSelectionSet[0].getSelectedKey();
+			this.getModel("help").getData().list.forEach(function(oRes) {
+				oRes._key = sSystem + oRes.Ebeln + oRes.Ebelp;
+				oRes._all = oRes.Lifnr + "|" + oRes.Waers + "|" + oRes.Matnr + "|" + oRes.Txz01 + "|";
+			});
+		},
+
+		onAfterSelectContract: function(oEvent) {
+			oEvent.getParameter("tokens").forEach(function(oToken) {
+				var aParts = oToken.getText().split("|");
+				this._addItem(aParts[0], aParts[1], aParts[2], aParts[3]);
+			}.bind(this));
 		},
 
 		onAfterSelectAnln1: function(oEvent) {
