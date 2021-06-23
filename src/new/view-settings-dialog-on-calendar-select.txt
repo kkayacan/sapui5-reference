@@ -1,0 +1,78 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:u="sap.ui.unified">
+	<ViewSettingsDialog confirm=".onFilterDialogConfirm" filterDetailPageOpened=".onFilterDetailPageOpened" resetFilters="onResetFilters">
+		<filterItems>
+			<ViewSettingsCustomItem text="{i18n>ProcessDate}" key="ProcessDate">
+				<customControl>
+					<u:Calendar id="processDateCalendar" intervalSelection="true" months="1" select=".onCalendarSelect">
+						<u:customData>
+							<core:CustomData key="key" value="ProcessDate"/>
+						</u:customData>
+					</u:Calendar>
+				</customControl>
+			</ViewSettingsCustomItem>
+		</filterItems>
+	</ViewSettingsDialog>
+</core:FragmentDefinition>
+
+		onFilterButtonPressed: function (oEvent) {
+			this.createViewSettingsDialog("co.arteis.thm-ftconfirm.view.FilterDialog");
+		},
+
+		createViewSettingsDialog: function (sDialogFragmentName) {
+			var oDialog = this._mViewSettingsDialogs[sDialogFragmentName];
+			var oView = this.getView();
+
+			if (!oDialog) {
+				Fragment.load({
+					id: oView.getId(),
+					name: sDialogFragmentName,
+					controller: this
+				}).then(function (oCreatedDialog) {
+					// connect dialog to the root view of this component (models, lifecycle)
+					oView.addDependent(oCreatedDialog);
+					this._mViewSettingsDialogs[sDialogFragmentName] = oCreatedDialog;
+					if (Device.system.desktop) {
+						oCreatedDialog.addStyleClass("sapUiSizeCompact");
+					}
+
+					// var aFilterItems = oCreatedDialog.getFilterItems();
+					// for (var i = 0; i < aFilterItems.length; i++) {
+					// 	if (aFilterItems[i].getProperty("key") === "ICreatedate" || aFilterItems[i].getProperty("key") === "IDate") {
+					// 		aFilterItems[i].setFilterCount(1);
+					// 		aFilterItems[i].setSelected(true);
+					// 	}
+					// }
+
+					// this.byId("promotionDateCalendar").addSelectedDate(new DateRange({
+					// 	startDate: this.selectedDates["ICreatedate"]
+					// }));
+					// this.byId("priceKeyDateCalendar").addSelectedDate(new DateRange({
+					// 	startDate: this.selectedDates["IDate"]
+					// }));
+
+					oCreatedDialog
+						.setFilterSearchCallback(null)
+						.setFilterSearchOperator(sap.m.StringFilterOperator.Contains).open();
+				}.bind(this));
+			} else {
+				oDialog.open();
+			}
+		},
+
+		onCalendarSelect: function (oEvent) {
+			this.selectedDates[oEvent.getSource().data("key")] = oEvent.getSource().getSelectedDates()[0].getProperty("startDate");
+			var aFilterItems = oEvent.getSource().getParent().getParent().getParent().getParent().getFilterItems();
+			this.dStartDate = oEvent.getSource().getSelectedDates()[0].getProperty("startDate");
+			this.dEndDate = oEvent.getSource().getSelectedDates()[0].getProperty("endDate");
+			if (!this.dEndDate) {
+				this.dEndDate = new Date(this.dStartDate.getTime());
+			}
+			var iDayCount = ((this.dEndDate.getTime() - this.dStartDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+			for (var i = 0; i < aFilterItems.length; i++) {
+				if (aFilterItems[i].getProperty("key") === oEvent.getSource().data("key")) {
+					aFilterItems[i].setFilterCount(iDayCount);
+					aFilterItems[i].setSelected(true);
+					break;
+				}
+			}
+		},
