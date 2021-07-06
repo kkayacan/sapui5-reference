@@ -1,0 +1,10 @@
+		onLiveChangeValueHelp: function(oEvent) {
+			var sQuery = oEvent.getParameter("newValue");
+			var aFilters = [];
+			this._oValueHelpDialog.getTableAsync().then(function(oTable) {
+				this._oHelpParam.liveChangeKeys.forEach(function(sLiveChangeKey) {
+					aFilters.push(new sap.ui.model.Filter(sLiveChangeKey, sap.ui.model.FilterOperator.Contains, sQuery));
+				});
+				oTable.getBinding("rows").filter(new sap.ui.model.Filter(aFilters, false), "Application");
+			}.bind(this));
+		}
