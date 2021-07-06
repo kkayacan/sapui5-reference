@@ -1,0 +1,370 @@
+****************************************
+***** ValueHelpDialog.fragment.xml *****
+
+<core:FragmentDefinition xmlns="sap.ui.comp.valuehelpdialog" xmlns:m="sap.m" xmlns:fb="sap.ui.comp.filterbar" xmlns:core="sap.ui.core">
+	<ValueHelpDialog title="{help>/title}" ok=".onOkValueHelp" cancel=".onCancelValueHelp" afterClose=".onAfterCloseValueHelp"
+		supportMultiselect="false" supportRanges="false" key="{help>/key}" descriptionKey="{help>/descriptionKey}">
+		<filterBar>
+			<fb:FilterBar advancedMode="true" showGoOnFB="true" search="onSearchValueHelp"/>
+		</filterBar>
+	</ValueHelpDialog>
+</core:FragmentDefinition>
+
+***** ValueHelpDialog.fragment.xml *****
+****************************************
+
+*************************
+***** manifest.json *****
+
+		"models": {
+			"i18n": {
+				"type": "sap.ui.model.resource.ResourceModel",
+				"settings": {
+					"bundleName": "co.arteis.penti-rsimaint.i18n.i18n"
+				}
+			},
+			"": {
+				"dataSource": "mainService",
+				"preload": true
+			},
+			"valueHelpParam": {
+				"type": "sap.ui.model.json.JSONModel",
+				"uri": "./model/valueHelpParam.json",
+				"preload": true
+			}
+		},
+
+***** manifest.json *****
+*************************
+
+*******************************
+***** ValueHelpParam.json *****
+
+{
+	"valueHelpDialogFragment": "co.arteis.penti-rsimaint.fragment.ValueHelpDialog",
+	"Matnr": {
+		"supportMultiSelect": false,
+		"key": "ExtProdId",
+		"descriptionKey": "ProdName",
+		"showValueHelp": false,
+		"entitySet": "EtProductSet",
+		"filterItems": [{
+			"type": "Input",
+			"path": "ProdName",
+			"operator": "Contains"
+		}, {
+			"type": "Input",
+			"path": "ExtMerCat"
+		}],
+		"columns": [{
+			"path": "ExtProdId"
+		}, {
+			"path": "ProdName"
+		}, {
+			"path": "ProdTypeName"
+		}, {
+			"path": "ExtMerCat"
+		}, {
+			"path": "BaseUom"
+		}, {
+			"path": "ModeRetailPrc"
+		}, {
+			"path": "ModePurchPrc"
+		}, {
+			"path": "ModeVatPrc"
+		}],
+		"liveChangeKeys": ["ProdName", "ProdTypeName"]
+	},
+	"Matkl": {
+
+	},
+	"Template": {
+		"supportMultiSelect": false,
+		"key": "Property",
+		"descriptionKey": "Property",
+		"showValueHelp": true,
+		"entitySet": "EntitySet",
+		"parameters": [{
+			"valueModel": "objectView",
+			"valuePath": "Property",
+			"targetPath": "Property"
+		}],
+		"filterItems": [{
+			"type": "Input",
+			"path": "Property",
+			"operator": "EQ"
+		}, {
+			"type": "Input",
+			"path": "Property",
+			"operator": "Contains"
+		}, {
+			"type": "Date",
+			"path": "Property"
+		}, {
+			"type": "Select",
+			"path": "Property",
+			"entitySet": "EntitySet",
+			"items": []
+		}],
+		"columns": [{
+			"path": "Property"
+		}, {
+			"path": "Property"
+		}],
+		"liveChangeKeys": ["Property", "Property"],
+		"onDataReceived": "onDataReceivedProperty"
+	}
+}
+
+***** ValueHelpParam.json *****
+*******************************
+
+***************************
+***** Object.view.xml *****
+
+							<Input name="ExtNodeId" type="Text" value="{objectView>/entity/ExtNodeId}" editable="{= ${objectView>/mode} === 'create'}" maxLength="40"
+								showValueHelp="{objectView>/ExtNodeIdValueHelp}" valueHelpRequest="onValueHelpRequest"/>
+
+***** Object.view.xml *****
+***************************
+
+********************************
+***** Object.controller.js *****
+
+		/* =========================================================== */
+		/* value help methods                                          */
+		/* =========================================================== */
+
+		onValueHelpRequest: function(oEvent) {
+			this._oInput = oEvent.getSource();
+			var oHelpParamData = this.getModel("valueHelpParam").getData();
+			var sName = oEvent.getSource().getName();
+			if (sName === "ExtNodeId") {
+				this._oHelpParam = oHelpParamData.Matnr;
+			} else {
+				this._oHelpParam = oHelpParamData[sName];
+			}
+
+			var aCols = [];
+
+			this._oHelpParam.columns.forEach(function(oColumn) {
+				aCols.push({
+					label: this.getResourceBundle().getText(oColumn.path),
+					template: oColumn.path
+				});
+			}.bind(this));
+
+			aCols.push({
+				label: "",
+				template: "_key",
+				width: "0rem"
+			});
+			aCols.push({
+				label: "",
+				template: "_all",
+				width: "0rem"
+			});
+
+			this._oColModel = new JSONModel({
+				cols: aCols
+			});
+
+			if (this._oHelpParam.titleKey) {
+				var sTitle = this.getResourceBundle().getText(this._oHelpParam.titleKey);
+			} else {
+				sTitle = this.getResourceBundle().getText(this._oHelpParam.key);
+			}
+
+			this._oHelpModel = new JSONModel({
+				title: sTitle,
+				key: this._oHelpParam.key,
+				descriptionKey: this._oHelpParam.descriptionKey,
+				list: [],
+				searchResults: []
+			});
+			this._oHelpModel.setSizeLimit(100000);
+			this.setModel(this._oHelpModel, "help");
+
+			this._oValueHelpDialog = sap.ui.xmlfragment(oHelpParamData.valueHelpDialogFragment, this);
+			this.getView().addDependent(this._oValueHelpDialog);
+
+			var oFilterBar = this._oValueHelpDialog.getFilterBar();
+			oFilterBar.setBasicSearch(new sap.m.SearchField({
+				showSearchButton: false,
+				placeholder: this.getResourceBundle().getText("basicSearchPlaceholder"),
+				liveChange: this.onLiveChangeValueHelp.bind(this)
+			}));
+
+			this._oHelpParam.filterItems.forEach(function(oFilterItem) {
+				var oFilterControl;
+				switch (oFilterItem.type) {
+					case "Date":
+						oFilterControl = new sap.m.DateRangeSelection(oFilterItem.type + oFilterItem.path, {
+							name: oFilterItem.path
+						});
+						break;
+					case "Select":
+						oFilterControl = new sap.m.Select(oFilterItem.type + oFilterItem.path, {
+							name: oFilterItem.path
+						});
+						oFilterItem.selectItems.forEach(function(oSelectItem) {
+							oFilterControl.addItem(new sap.ui.core.Item({
+								key: oSelectItem.key,
+								text: this.getResourceBundle().getText(oSelectItem.text)
+							}));
+						}.bind(this));
+						break;
+					default:
+						if (oFilterItem.showValueHelp) {
+							this._sValueHelpKey = oFilterItem.path;
+							var oProp = {
+								name: oFilterItem.path,
+								showValueHelp: true,
+								valueHelpRequest: this.onValueHelpRequestDeep.bind(this)
+							};
+						} else {
+							oProp = {
+								name: oFilterItem.path
+							};
+						}
+						oFilterControl = new sap.m.Input(oFilterItem.type + oFilterItem.path, oProp);
+				}
+				oFilterBar.addFilterGroupItem(new sap.ui.comp.filterbar.FilterGroupItem({
+					groupName: "__$INTERNAL$",
+					name: oFilterItem.path,
+					label: this.getResourceBundle().getText(oFilterItem.path),
+					visibleInFilterBar: true
+				}).setControl(oFilterControl));
+			}.bind(this));
+
+			this._oValueHelpDialog.getTableAsync().then(function(oTable) {
+				oTable.setModel(this._oHelpModel);
+				oTable.setModel(this._oColModel, "columns");
+				if (oTable.bindRows) {
+					oTable.bindAggregation("rows", "/list");
+				}
+				this._oValueHelpDialog.update();
+			}.bind(this));
+
+			this._oValueHelpDialog.setSupportMultiselect(this._oHelpParam.supportMultiSelect);
+			this._oValueHelpDialog.open();
+
+		},
+
+		onSearchValueHelp: function(oEvent) {
+			sap.ui.core.BusyIndicator.show();
+			var aFilters = [];
+			if (this._oHelpParam.hasOwnProperty("parameters")) {
+				this._oHelpParam.parameters.forEach(function(oParameter) {
+					this._objectContainer = this.getModel(oParameter.valueModel).getProperty(this.getItemBindingPath(oEvent.getSource()));
+					if (this._objectContainer[oParameter.valuePath]) {
+						aFilters.push(new sap.ui.model.Filter(oParameter.targetPath, sap.ui.model.FilterOperator.EQ, this._objectContainer[oParameter.valuePath]));
+					}
+				}.bind(this));
+			}
+			var aSelectionSet = oEvent.getParameter("selectionSet");
+			aSelectionSet.forEach(function(oControl) {
+				if (oControl.getId().includes("Date")) {
+					if (oControl.getValue()) {
+						aFilters.push(new sap.ui.model.Filter(oControl.getName(), sap.ui.model.FilterOperator.BT, sap.ui.core.format.DateFormat.getDateInstance({
+							pattern: "yyyy-MM-dd"
+						}).format(oControl.getDateValue()), sap.ui.core.format.DateFormat.getDateInstance({
+							pattern: "yyyy-MM-dd"
+						}).format(oControl.getSecondDateValue())));
+					}
+				} else if (oControl.getId().includes("Select")) {
+					if (oControl.getSelectedKey()) {
+						aFilters.push(new sap.ui.model.Filter(oControl.getName(), sap.ui.model.FilterOperator.EQ, oControl.getSelectedKey()));
+					}
+				} else {
+					var aCurrentFilter = $.grep(this._oHelpParam.filterItems, function(n, i) {
+						return (n.path === oControl.getName());
+					});
+					if (aCurrentFilter[0].hasOwnProperty("operator")) {
+						var sOperator = aCurrentFilter[0].operator;
+					} else {
+						sOperator = sap.ui.model.FilterOperator.EQ;
+					}
+					if (oControl.getValue()) {
+						aFilters.push(new sap.ui.model.Filter(oControl.getName(), sOperator, oControl.getValue()));
+					}
+				}
+			}.bind(this));
+			this.getModel().read("/" + this._oHelpParam.entitySet, {
+				filters: aFilters,
+				success: function(oData, response) {
+					var aResult = oData.results.map(function(oItem, index) {
+						var oNewItem = {
+							key: oItem[this._oHelpParam.key],
+							descriptionKey: oItem[this._oHelpParam.descriptionKey]
+						};
+						$.each(oItem, function(key, value) {
+							if (value instanceof Date) {
+								oNewItem[key] = sap.ui.core.format.DateFormat.getDateInstance({
+									pattern: "dd.MM.yyyy"
+								}).format(value);
+							} else {
+								oNewItem[key] = value;
+							}
+						});
+						return oNewItem;
+					}.bind(this));
+					this.getModel("help").getData().list = aResult;
+					if (this._oHelpParam.onDataReceived) {
+						this[this._oHelpParam.onDataReceived](aSelectionSet);
+					}
+					this.getModel("help").refresh(true);
+					sap.ui.core.BusyIndicator.hide();
+				}.bind(this),
+				error: function(oError) {
+					sap.ui.core.BusyIndicator.hide();
+				}
+			});
+		},
+
+		onLiveChangeValueHelp: function(oEvent) {
+			var sQuery = oEvent.getParameter("newValue");
+			var aFilters = [];
+			this._oValueHelpDialog.getTableAsync().then(function(oTable) {
+				this._oHelpParam.liveChangeKeys.forEach(function(sLiveChangeKey) {
+					aFilters.push(new sap.ui.model.Filter(sLiveChangeKey, sap.ui.model.FilterOperator.Contains, sQuery));
+				});
+				oTable.getBinding("rows").filter(new sap.ui.model.Filter(aFilters, false), "Application");
+			}.bind(this));
+		},
+
+		onCancelValueHelp: function() {
+			this._oValueHelpDialog.close();
+		},
+
+		onOkValueHelp: function(oEvent) {
+			if (this._oHelpParam.onAfterSelect) {
+				this[this._oHelpParam.onAfterSelect](oEvent);
+			} else {
+				var aTokens = oEvent.getParameter("tokens");
+				if (this._oValueHelpDialog.getSupportMultiselect()) {
+					aTokens.forEach(function(oToken) {
+						this._oInput.addToken(oToken);
+					}.bind(this));
+				} else {
+					this._oInput.setValue(aTokens[0].getKey());
+				}
+			}
+			this._oValueHelpDialog.close();
+		},
+
+		onAfterCloseValueHelp: function() {
+			this._oValueHelpDialog.destroy();
+		},
+
+		getItemBindingPath: function(oEventSource, sContainerId, sValueModel) {
+			var oParent = oEventSource.getParent();
+			if (oParent.getMetadata().getName() === "sap.m.ColumnListItem" && oParent.getId().includes(sContainerId)) {
+				return oParent.getBindingContextPath();
+			} else {
+				return this.byId(sContainerId).getElementBinding(sValueModel).getPath();
+			}
+		}
+
+***** Object.controller.js *****
+********************************
