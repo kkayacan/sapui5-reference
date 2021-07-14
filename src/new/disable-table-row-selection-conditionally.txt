@@ -1,0 +1,21 @@
+		onUpdateFinished: function(oEvent) {
+			// update the worklist's object counter after the table update
+			var sTitle,
+				oTable = oEvent.getSource(),
+				iTotalItems = oEvent.getParameter("total");
+			// only update the counter if the length is final and
+			// the table is not empty
+			if (iTotalItems && oTable.getBinding("items").isLengthFinal()) {
+				sTitle = this.getResourceBundle().getText("worklistTableTitleCount", [iTotalItems]);
+			} else {
+				sTitle = this.getResourceBundle().getText("worklistTableTitle");
+			}
+			this.getModel("worklistView").setProperty("/worklistTableTitle", sTitle);
+			var aItems = this.byId("table").getItems();
+			aItems.forEach(function(oItem) {
+				var oObject = oItem.getBindingContext().getObject();
+				if (oObject.Approved || oObject.Cancelled) {
+					sap.ui.getCore().byId(oItem.$().find(".sapMCb").attr("id")).setEnabled(false);
+				}
+			});
+		},
