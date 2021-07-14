@@ -1,0 +1,36 @@
+		onProcess: function(oEvent) {
+			sap.ui.core.BusyIndicator.show();
+			var sButtonId = oEvent.getSource().getId();
+			var aSelected = this.byId("table").getSelectedItems();
+			var oModel = this.getModel();
+			oModel.setDeferredGroups(["batchFunctionImport"]);
+			for (var i = 0; i < aSelected.length; i++) {
+				oModel.callFunction("/Process", {
+					method: "POST",
+					urlParameters: {
+						"IProcessid": aSelected[i].getBindingContext().getObject().ProcessId,
+						"IAction": sButtonId.includes("approveButton") ? "A" : "C"
+					},
+					batchGroupId: "batchFunctionImport",
+					changeSetId: i
+				});
+			}
+
+			oModel.submitChanges({
+				batchGroupId: "batchFunctionImport",
+				success: function(oData) {
+					var oTable = this.byId("table");
+					oTable.removeSelections(true);
+					oTable.getBinding("items").refresh();
+					if (oTable.getSelectedItems().length > 0) {
+						this.getModel("worklistView").setProperty("/footerVisible", true);
+					} else {
+						this.getModel("worklistView").setProperty("/footerVisible", false);
+					}
+					sap.ui.core.BusyIndicator.hide();
+				}.bind(this),
+				error: function(oError) {
+					sap.ui.core.BusyIndicator.hide();
+				}
+			});
+		},
