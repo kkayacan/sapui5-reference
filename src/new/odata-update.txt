@@ -1,0 +1,36 @@
+onCloseDialog: function(oEvent) {
+    if (oEvent.getSource().getId().includes("save")) {
+        sap.ui.core.BusyIndicator.show();
+        var oModel = this.getModel();
+        var sKey = oModel.createKey("CashSpotSet", {
+            Retailstoreid: this._oItem.Retailstoreid,
+            Businessdaydate: this._oItem.Businessdaydate
+        });
+        var oCount = this.getModel("worklistView").getData().countData;
+        var oEntry = {
+            C200: parseFloat(oCount.count200.toString()),
+            C100: parseFloat(oCount.count100.toString()),
+            C50: parseFloat(oCount.count50.toString()),
+            C20: parseFloat(oCount.count20.toString()),
+            C10: parseFloat(oCount.count10.toString()),
+            C5: parseFloat(oCount.count5.toString()),
+            C1: parseFloat(oCount.count1.toString()),
+            C050: parseFloat(oCount.count050.toString()),
+            C025: parseFloat(oCount.count025.toString()),
+            C010: parseFloat(oCount.count010.toString()),
+            C005: parseFloat(oCount.count005.toString())
+        };
+        oModel.update("/" + sKey, oEntry, {
+            method: "PUT",
+            success: function(data) {
+                sap.ui.core.BusyIndicator.hide();
+                this.byId("countDialog").close();
+            }.bind(this),
+            error: function(e) {
+                sap.ui.core.BusyIndicator.hide();
+            }
+        });
+    } else {
+        this.byId("countDialog").close();
+    }
+},
