@@ -1,0 +1,40 @@
+		setBindingForView: function() {
+			// Create new JSON model for view
+			var oView = this.getView();
+			var oModel = new JSONModel();
+			oModel.setDefaultBindingMode(sap.ui.model.BindingMode.OneWay);
+			oView.setModel(oModel);
+
+			// Set the binding context of the view in order to stay compatible with previous version (direct oData binding)
+			oView.bindElement("/");
+
+			// Get product table and item template
+			var oTable = this.getProductTable();
+			var oTemplate = oTable.getItems()[0].clone();
+
+			// Create new JSON model for displaying product data in product table
+			oModel = new JSONModel();
+			oModel.setDefaultBindingMode(sap.ui.model.BindingMode.OneWay);
+			oTable.setModel(oModel);
+
+			// Create binding info for item aggregation of product table
+			var oBindingInfo = {
+				path: "/Products",
+				template: oTemplate
+			};
+
+			/**
+			 * @ControllerHook [Adjust the binding info of the product table] The hook is called once when the app is started.
+			 *                 It can be used to modify the binding info for the item aggregation of the product table
+			 * @callback co.arteis.orderproducts1.controller.ProductList~extHookAdjustBindingInfo
+			 * @param {object}
+			 *          oBindingInfo The binding info, which is later passed to the product table via bindAggregation
+			 * @return {void}
+			 */
+			if (this.extHookAdjustBindingInfo) {
+				this.extHookAdjustBindingInfo(oBindingInfo);
+			}
+
+			// Bind item aggregation of product table
+			oTable.bindAggregation("items", oBindingInfo);
+		},
