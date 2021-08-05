@@ -53,24 +53,8 @@
 
 			this.getOwnerComponent().getService("ShellUIService").then(
 				function(oService) {
-					switch (this._appType) {
-						case "1":
-							oService.setTitle(this.getResourceBundle().getText("appTitle1"));
-							break;
-						case "2":
-							oService.setTitle(this.getResourceBundle().getText("appTitle2"));
-							break;
-						case "3":
-							oService.setTitle(this.getResourceBundle().getText("appTitle3"));
-							break;
-						case "5":
-							oService.setTitle(this.getResourceBundle().getText("appTitle5"));
-							break;
-					}
-				}.bind(this),
-				function(oError) {
-					jQuery.sap.log.error("Cannot get ShellUIService", oError, "XXXXXXXXX.hr.MyTimesheet");
-				}
+					oService.setTitle(this.getResourceBundle().getText("appTitle" + this._appType));
+				}.bind(this)
 			);
 
 		},
