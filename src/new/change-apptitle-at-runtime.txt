@@ -1,0 +1,76 @@
+****** manifest.json *****
+
+    "sap.ui5": {
+        "flexEnabled": true,
+        "rootView": {
+            "viewName": "co.arteis.orderproducts1.view.App",
+            "type": "XML",
+            "async": true,
+            "id": "appView"
+        },
+        "config": {
+            "sapFiori2Adaptation": {
+                "style": false,
+                "collapse": true,
+                "title": true,
+                "back": false,
+                "hierarchy": false
+            }
+        },
+        "dependencies": {
+            "minUI5Version": "1.78.4",
+            "libs": {
+                "sap.m": {
+                    "lazy": false
+                },
+                "sap.ndc": {
+                    "lazy": false
+                },
+                "sap.ui.core": {
+                    "lazy": false
+                },
+                "sap.ui.layout": {
+                    "lazy": false
+                },
+                "sap.ushell": {
+                    "lazy": false
+                },
+                "sap.retail.store.lib.reuses1": {}
+            }
+        },
+        "services": {
+            "ShellUIService": {
+                "factoryName": "sap.ushell.ui5service.ShellUIService"
+            }
+        },
+
+
+****** controller.js ******
+
+		onInit: function() {
+			// Initialize the class variables for this controller
+			this._appType = window.location.href.substr(window.location.href.indexOf("fapp") + 5, 1);
+
+			this.getOwnerComponent().getService("ShellUIService").then(
+				function(oService) {
+					switch (this._appType) {
+						case "1":
+							oService.setTitle(this.getResourceBundle().getText("appTitle1"));
+							break;
+						case "2":
+							oService.setTitle(this.getResourceBundle().getText("appTitle2"));
+							break;
+						case "3":
+							oService.setTitle(this.getResourceBundle().getText("appTitle3"));
+							break;
+						case "5":
+							oService.setTitle(this.getResourceBundle().getText("appTitle5"));
+							break;
+					}
+				}.bind(this),
+				function(oError) {
+					jQuery.sap.log.error("Cannot get ShellUIService", oError, "XXXXXXXXX.hr.MyTimesheet");
+				}
+			);
+
+		},
