@@ -1,0 +1,54 @@
+***** manifest.json *****
+
+	"sap.ui5": {
+		"_version": "1.1.0",
+		"dependencies": {
+			"minUI5Version": "1.78.4"
+		},
+		"extends": {
+			"component": "retail.store.stockcorrections1",
+			"extensions": {
+				"sap.ui.viewExtensions": {
+					"retail.store.stockcorrections1.view.ProductShrink": {
+						"Shrink_Info_Ext": {
+							"className": "sap.ui.core.Fragment",
+							"fragmentName": "retail.store.stockcorrections1.RT_STOCK_CORS1Extension.view.ProductShrink_Shrink_Info_ExtCustom",
+							"type": "XML"
+						}
+					}
+				},
+				"sap.ui.controllerExtensions": {
+					"retail.store.stockcorrections1.controller.ProductShrink": {
+						"controllerName": "retail.store.stockcorrections1.RT_STOCK_CORS1Extension.controller.ProductShrinkCustom"
+					}
+				}
+			}
+		},
+		"contentDensities": {
+			"compact": true,
+			"cozy": true
+		},
+		"models": {
+			"i18nCustom": {
+				"type": "sap.ui.model.resource.ResourceModel",
+				"settings": {
+					"bundleName": "retail.store.stockcorrections1.RT_STOCK_CORS1Extension.i18n.i18n"
+				}
+			}
+		}
+	},
+
+***** controller.js *****
+
+		onBeforeRendering: function() {
+			var i18n = this.getModel("i18n"); //get the standard i18n file
+			var sBundleURL = this.getModel("i18nCustom").getResourceBundle().oUrlInfo.url;
+			i18n.enhance({
+				bundleUrl: sBundleURL
+			}); // merge the custom i18n file with standard one
+		},
+
+***** new files *****
+
+webapp/i18n/i18n.properties
+webapp/i18n/i18n_tr.properties
