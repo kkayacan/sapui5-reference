@@ -12,7 +12,7 @@ sap.ui.define([
 ], function(UI5Object, MessageBox, JSONModel, MessageType, MessageItem, MessageView, Button, Dialog, Bar, Text) {
 	"use strict";
 
-	return UI5Object.extend("co.arteis.kasaspot.controller.ErrorHandler", {
+	return UI5Object.extend("co.arteis.appname.controller.ErrorHandler", {
 
 		/**
 		 * Handles application errors by automatically attaching to the model events and displaying errors when needed.
@@ -27,6 +27,9 @@ sap.ui.define([
 			this._oModel = oComponent.getModel();
 			this._bMessageOpen = false;
 			this._sErrorText = this._oResourceBundle.getText("errorText");
+			if (this._sErrorText === "errorText") {
+				this._sErrorText = "ERROR";
+			}
 
 			this._oModel.attachMetadataFailed(function(oEvent) {
 				var oParams = oEvent.getParameters();
@@ -82,7 +85,7 @@ sap.ui.define([
 						});
 					} catch (oHtmlParseError) {
 						aList.push({
-							message: "ERROR",
+							message: this._sErrorText,
 							severity: "error"
 						});
 					}
@@ -91,11 +94,6 @@ sap.ui.define([
 				if (oDetails.statusText) {
 					aList.push({
 						message: oDetails.statusText,
-						severity: "error"
-					});
-				} else if (oDetails.hasOwnProperty("message")) {
-					aList.push({
-						message: oDetails.message,
 						severity: "error"
 					});
 				} else {
@@ -113,7 +111,7 @@ sap.ui.define([
 							});
 						} else {
 							aList.push({
-								message: "ERROR",
+								message: this._sErrorText,
 								severity: "error"
 							});
 						}
