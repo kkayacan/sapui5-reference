@@ -1,0 +1,484 @@
+https://abappolice.com/2021/09/save-attachment-to-gos-from-sapui5-fiori/
+
+*********************
+***** STRUCTURE *****
+
+OBJECT_ID	1 Types	SIBFBORIID	CHAR	70	0	0	Instance Ident. in BOR Compat. Persistent Object References
+OBJECT_TYPE	1 Types	SIBFTYPEID	CHAR	32	0	0	Type of Objects in Persistent Object References
+OBJECT_CAT	1 Types	SIBFCATID	CHAR	2	0	0	Category of Objects in Persistent Object References
+DOCUMENT_ID	1 Types	DOCUMENTID	CHAR	36	0	0	Document ID
+FILE_NAME	1 Types	BITM_FILENAME	CHAR	255	0	0	File Name of Browser Item (Display Attribute)
+MIME_TYPE	1 Types	FPGRAPHICMIME	CHAR	64	0	0	MIME Type of Graphic
+CREATOR	1 Types	SO_CRO_NAM	CHAR	12	0	0	Created By
+CREATOR_NAME	1 Types	SGS_CRNAME	CHAR	60	0	0	Created By
+CREATED_ON	1 Types	TIMESTAMP	DEC	15	0	0	UTC Time Stamp in Short Form (YYYYMMDDhhmmss)
+
+***** STRUCTURE *****
+*********************
+
+****************************
+***** FUNCTION MODULES *****
+
+FUNCTION z_upload_attachment.
+*"----------------------------------------------------------------------
+*"*"Local Interface:
+*"  IMPORTING
+*"     VALUE(IV_OBJECT_ID) TYPE  SIBFBORIID
+*"     VALUE(IV_FILENAME) TYPE  SO_OBJ_DES
+*"     VALUE(IV_VALUE) TYPE  XSTRING
+*"  EXPORTING
+*"     VALUE(ES_ATTACHMENT) TYPE  ZST_ATTACHMENT
+*"     VALUE(ES_RETURN) TYPE  BAPIRET2
+*"----------------------------------------------------------------------
+
+  DATA ls_folder_id TYPE soodk.
+  CALL FUNCTION 'SO_FOLDER_ROOT_ID_GET'
+    EXPORTING
+      region                = 'B'
+    IMPORTING
+      folder_id             = ls_folder_id
+    EXCEPTIONS
+      communication_failure = 1
+      owner_not_exist       = 2
+      system_failure        = 3
+      x_error               = 4
+      OTHERS                = 5.
+
+  DATA lv_extension TYPE sood-file_ext.
+  CALL FUNCTION 'TRINT_FILE_GET_EXTENSION'
+    EXPORTING
+      filename  = iv_filename
+    IMPORTING
+      extension = lv_extension.
+
+  DATA: lv_output_length TYPE i,
+        lt_solix         TYPE solix_tab.
+  CALL FUNCTION 'SCMS_XSTRING_TO_BINARY'
+    EXPORTING
+      buffer        = iv_value
+    IMPORTING
+      output_length = lv_output_length
+    TABLES
+      binary_tab    = lt_solix.
+
+  DATA lt_soli  TYPE soli_tab.
+  CALL FUNCTION 'SO_SOLIXTAB_TO_SOLITAB'
+    EXPORTING
+      ip_solixtab = lt_solix
+    IMPORTING
+      ep_solitab  = lt_soli.
+
+  DATA: ls_object_hd_change TYPE sood1,
+        lt_objhead          TYPE STANDARD TABLE OF soli.
+
+  ls_object_hd_change-objla = sy-langu.
+  ls_object_hd_change-objnam = 'MESSAGE'.
+  ls_object_hd_change-objdes = iv_filename.
+  ls_object_hd_change-file_ext = lv_extension.
+  ls_object_hd_change-objlen = lv_output_length.
+
+  DATA lv_mimetype TYPE mimetypes-type.
+  CALL FUNCTION 'SDOK_MIMETYPE_GET'
+    EXPORTING
+      extension = lv_extension
+    IMPORTING
+      mimetype  = lv_mimetype.
+
+  lt_objhead = VALUE #( ( line = '&SO_FILENAME=' && iv_filename )
+                        ( line = '&SO_FORMAT=BIN' )
+                        ( line = '&SO_CONTTYPE=' && lv_mimetype ) ).
+
+  DATA ls_object_id TYPE soodk.
+  CALL FUNCTION 'SO_OBJECT_INSERT'
+    EXPORTING
+      folder_id                  = ls_folder_id
+      object_hd_change           = ls_object_hd_change
+      object_type                = 'EXT'
+    IMPORTING
+      object_id                  = ls_object_id
+    TABLES
+      objcont                    = lt_soli
+      objhead                    = lt_objhead
+    EXCEPTIONS
+      active_user_not_exist      = 1
+      communication_failure      = 2
+      component_not_available    = 3
+      dl_name_exist              = 4
+      folder_not_exist           = 5
+      folder_no_authorization    = 6
+      object_type_not_exist      = 7
+      operation_no_authorization = 8
+      owner_not_exist            = 9
+      parameter_error            = 10
+      substitute_not_active      = 11
+      substitute_not_defined     = 12
+      system_failure             = 13
+      x_error                    = 14
+      OTHERS                     = 15.
+  IF sy-subrc <> 0.
+    es_return-type   = 'E'.
+    es_return-id     = sy-msgid.
+    es_return-number = sy-msgno.
+    es_return-message_v1 = sy-msgv1.
+    es_return-message_v2 = sy-msgv2.
+    es_return-message_v3 = sy-msgv3.
+    es_return-message_v4 = sy-msgv4.
+    IF es_return-id IS INITIAL.
+      es_return-id     = 'SV'.
+      es_return-number = '171'.
+    ENDIF.
+    RETURN.
+  ENDIF.
+
+  es_attachment-object_type = 'BUS2012'.
+  es_attachment-object_cat  = 'BO'.
+  es_attachment-document_id = ls_folder_id-objtp && ls_folder_id-objyr && ls_folder_id-objno &&
+                              ls_object_id-objtp && ls_object_id-objyr && ls_object_id-objno.
+  es_attachment-file_name   = iv_filename.
+  es_attachment-mime_type   = lv_mimetype.
+
+
+  DATA: ls_object_a TYPE sibflporb,
+        ls_object_b TYPE sibflporb.
+
+  ls_object_a-instid = iv_object_id.
+  ls_object_a-typeid = 'BUS2012'.
+  ls_object_a-catid  = 'BO'.
+  ls_object_b-instid  = es_attachment-document_id.
+  ls_object_b-typeid = 'MESSAGE'.
+  ls_object_b-catid  = 'BO'.
+
+  TRY.
+      cl_binary_relation=>create_link(
+        EXPORTING
+          is_object_a = ls_object_a
+          is_object_b = ls_object_b
+          ip_reltype  = 'ATTA' ).
+    CATCH cx_obl_parameter_error.
+    CATCH cx_obl_model_error.
+    CATCH cx_obl_internal_error.
+  ENDTRY.
+
+ENDFUNCTION.
+
+FUNCTION z_download_attachment.
+*"----------------------------------------------------------------------
+*"*"Local Interface:
+*"  IMPORTING
+*"     VALUE(IV_DOCUMENT_ID) TYPE  DOCUMENTID
+*"  EXPORTING
+*"     VALUE(EV_VALUE) TYPE  XSTRING
+*"     VALUE(EV_MIME_TYPE) TYPE  STRING
+*"     VALUE(EV_FILENAME) TYPE  SO_OBJ_DES
+*"----------------------------------------------------------------------
+
+  DATA: ls_document_data TYPE sofolenti1,
+        lt_content       TYPE STANDARD TABLE OF solix.
+
+  CALL FUNCTION 'SO_DOCUMENT_READ_API1'
+    EXPORTING
+      document_id                = CONV sofolenti1-doc_id( iv_document_id )
+    IMPORTING
+      document_data              = ls_document_data
+    TABLES
+      contents_hex               = lt_content
+    EXCEPTIONS
+      document_id_not_exist      = 1
+      operation_no_authorization = 2
+      x_error                    = 3
+      OTHERS                     = 4.
+
+  CALL FUNCTION 'SCMS_BINARY_TO_XSTRING'
+    EXPORTING
+      input_length = CONV i( ls_document_data-doc_size )
+    IMPORTING
+      buffer       = ev_value
+    TABLES
+      binary_tab   = lt_content
+    EXCEPTIONS
+      failed       = 1
+      OTHERS       = 2.
+
+  DATA lv_mimetype TYPE mimetypes-type.
+  CALL FUNCTION 'SDOK_MIMETYPE_GET'
+    EXPORTING
+      extension = ls_document_data-obj_type
+    IMPORTING
+      mimetype  = lv_mimetype.
+  ev_mime_type = lv_mimetype.
+  ev_filename = ls_document_data-obj_descr.
+
+ENDFUNCTION.
+
+FUNCTION z_get_attachments.
+*"----------------------------------------------------------------------
+*"*"Local Interface:
+*"  IMPORTING
+*"     VALUE(IV_OBJECT_ID) TYPE  SIBFBORIID
+*"  EXPORTING
+*"     VALUE(ET_ATTACHMENT) TYPE  ZTT_ATTACHMENT
+*"----------------------------------------------------------------------
+
+  TRY.
+      cl_binary_relation=>read_links_of_objects(
+        EXPORTING
+          it_objects = VALUE #( ( instid = iv_object_id typeid = 'BUS2012' catid = 'BO' ) )
+        IMPORTING
+          et_links_a = DATA(lt_links) ).
+    CATCH cx_obl_model_error.
+    CATCH cx_obl_parameter_error.
+    CATCH cx_obl_internal_error.
+  ENDTRY.
+
+  LOOP AT lt_links ASSIGNING FIELD-SYMBOL(<ls_link>).
+    SELECT SINGLE * FROM sood
+      WHERE objtp = @<ls_link>-instid_b+17(3)
+        AND objyr = @<ls_link>-instid_b+20(2)
+        AND objno = @<ls_link>-instid_b+22
+      INTO @DATA(ls_sood).
+    IF sy-subrc = 0.
+      APPEND INITIAL LINE TO et_attachment ASSIGNING FIELD-SYMBOL(<ls_attach>).
+      <ls_attach>-object_id    = <ls_link>-instid_a.
+      <ls_attach>-object_type  = <ls_link>-typeid_a.
+      <ls_attach>-object_cat   = <ls_link>-catid_a.
+      <ls_attach>-document_id  = <ls_link>-instid_b.
+      <ls_attach>-file_name    = ls_sood-objdes.
+      <ls_attach>-creator      = ls_sood-crono.
+      <ls_attach>-creator_name = ls_sood-cronam.
+      <ls_attach>-created_on   = <ls_link>-utctime.
+      DATA lv_mimetype TYPE mimetypes-type.
+      CALL FUNCTION 'SDOK_MIMETYPE_GET'
+        EXPORTING
+          extension = ls_sood-file_ext
+        IMPORTING
+          mimetype  = lv_mimetype.
+      <ls_attach>-mime_type    = lv_mimetype.
+      CLEAR lv_mimetype.
+    ENDIF.
+  ENDLOOP.
+
+ENDFUNCTION.
+
+***** FUNCTION MODULES *****
+****************************
+
+***************************
+***** MPC_EXT->DEFINE *****
+
+METHOD define.
+  super->define( ).
+  model->get_entity_type( iv_entity_name = `Attachment` )->get_property( iv_property_name = `MimeType` )->set_as_content_type( ).
+ENDMETHOD.
+
+***** MPC_EXT->DEFINE *****
+***************************
+
+*****************************************************************
+***** DPC_EXT->/IWBEP/IF_MGW_APPL_SRV_RUNTIME~CREATE_STREAM *****
+
+METHOD /iwbep/if_mgw_appl_srv_runtime~create_stream.
+
+  DATA(lv_entity_set_name) = io_tech_request_context->get_entity_set_name( ).
+
+  CASE lv_entity_set_name.
+    WHEN 'AttachmentSet'.
+
+      DATA: lv_object_id  TYPE sibfboriid,
+            lv_filename   TYPE so_obj_des,
+            lv_file_id    TYPE soodk,
+            ls_attachment TYPE zst_attachment,
+            ls_return     TYPE bapiret2.
+
+      SPLIT iv_slug AT ';' INTO lv_filename lv_object_id.
+
+      CALL FUNCTION 'Z_UPLOAD_ATTACHMENT'
+        EXPORTING
+          iv_object_id  = lv_object_id
+          iv_filename   = lv_filename
+          iv_value      = is_media_resource-value
+        IMPORTING
+          es_attachment = ls_attachment
+          es_return     = ls_return.
+
+      IF ls_return-type = 'E'.
+        DATA(lo_exception) = NEW /iwbep/cx_mgw_busi_exception( ).
+        lo_exception->get_msg_container( )->add_message_from_bapi( is_bapi_message = ls_return iv_message_target = CONV string( ls_return-field ) ).
+        RAISE EXCEPTION lo_exception.
+      ENDIF.
+
+      copy_data_to_ref( EXPORTING is_data = ls_attachment CHANGING cr_data = er_entity ).
+
+  ENDCASE.
+
+ENDMETHOD.
+
+***** DPC_EXT->/IWBEP/IF_MGW_APPL_SRV_RUNTIME~CREATE_STREAM *****
+*****************************************************************
+
+**************************************************************
+***** DPC_EXT->/IWBEP/IF_MGW_APPL_SRV_RUNTIME~GET_STREAM *****
+
+  METHOD /iwbep/if_mgw_appl_srv_runtime~get_stream.
+
+    DATA ls_stream  TYPE ty_s_media_resource.
+    DATA(lv_entity_set_name) = io_tech_request_context->get_entity_set_name( ).
+    DATA(lt_keys) = io_tech_request_context->get_keys( ).
+
+    CASE lv_entity_set_name.
+      WHEN 'AttachmentSet'.
+        DATA: lv_document_id TYPE documentid,
+              lv_filename    TYPE so_obj_des.
+        lv_document_id = lt_keys[ name = 'DOCUMENT_ID' ]-value.
+        CALL FUNCTION 'Z_DOWNLOAD_ATTACHMENT'
+          EXPORTING
+            iv_document_id = lv_document_id
+          IMPORTING
+            ev_value       = ls_stream-value
+            ev_mime_type   = ls_stream-mime_type
+            ev_filename    = lv_filename.
+
+        DATA ls_lheader TYPE ihttpnvp.
+        lv_filename = escape( val = lv_filename format = cl_abap_format=>e_url ).
+        ls_lheader-name = 'Content-Disposition'.
+        ls_lheader-value = 'outline; filename=”' && lv_filename && '”;'.
+        set_header( is_header = ls_lheader ).
+
+        copy_data_to_ref( EXPORTING is_data = ls_stream
+                          CHANGING  cr_data = er_stream ).
+
+    ENDCASE.
+
+  ENDMETHOD.
+
+***** DPC_EXT->/IWBEP/IF_MGW_APPL_SRV_RUNTIME~GET_STREAM *****
+**************************************************************
+
+********************
+***** view.xml *****
+
+<mvc:View xmlns:html="http://www.w3.org/1999/xhtml" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:f="sap.ui.layout.form"
+	xmlns:core="sap.ui.core" controllerName="co.arteis.sospo.controller.Create" displayBlock="true">
+	<App>
+		<pages>
+			<Page id="page" title="{i18n>title}" showFooter="true" floatingFooter="true" busy="createView&gt;/page/busy" enableScrolling="true"
+				showNavButton="true" navButtonPress=".onNavButtonPress">
+				<content>
+					<UploadCollection id="UploadCollection" maximumFilenameLength="55" multiple="false" sameFilenameAllowed="true" instantUpload="false"
+						noDataDescription="Drop files or use the &quot;+&quot; button for pending upload" uploadEnabled="{createView>/page/editable}"
+						change="onChange" fileDeleted="onFileDeleted" filenameLengthExceed="onFilenameLengthExceed" fileSizeExceed="onFileSizeExceed"
+						typeMissmatch="onTypeMissmatch" uploadComplete="onUploadComplete" beforeUploadStarts="onBeforeUploadStarts"
+						items="{createView>/data/attachments}">
+						<items>
+							<UploadCollectionItem enableDelete="false" enableEdit="false" fileName="{createView>fileName}"/>
+						</items>
+					</UploadCollection>
+				</content>
+				<footer>
+					<OverflowToolbar>
+						<ToolbarSpacer/>
+						<Button text="{i18n>PlaceOrder}" type="Emphasized" press=".onOrderPress" visible="{createView>/page/editable}"/>
+					</OverflowToolbar>
+				</footer>
+			</Page>
+		</pages>
+	</App>
+</mvc:View>
+
+***** view.xml *****
+********************
+
+*****************************
+***** controller.OnInit *****
+
+		onInit: function() {
+			var oViewModel = new JSONModel({
+				page: {
+					busy: false,
+					editable: true
+				},
+				data: {
+					items: [{}],
+					attachments: []
+				}
+			});
+			this.setModel(oViewModel, "createView");
+
+			this.byId("UploadCollection").setUploadUrl(this.getOwnerComponent().getModel().sServiceUrl + "/AttachmentSet");
+		},
+
+***** controller.OnInit *****
+*****************************
+
+*******************************************
+***** UploadCollection event handlers *****
+
+		startUpload: function() {
+			var oUploadCollection = this.byId("UploadCollection");
+			// var oTextArea = this.byId("TextArea");
+			var cFiles = oUploadCollection.getItems().length;
+			// var uploadInfo = cFiles + " file(s)";
+
+			if (cFiles > 0) {
+				oUploadCollection.upload();
+				var oViewModel = this.getModel("createView");
+				oUploadCollection.getItems().forEach(function(oItem) {
+					oViewModel.getData().data.attachments.push({
+						fileName: oItem.getProperty("fileName")
+					});
+				}.bind(this));
+			}
+		},
+
+		onBeforeUploadStarts: function(oEvent) {
+			// Header Slug
+			var oCustomerHeaderSlug = new sap.m.UploadCollectionParameter({
+				name: "slug",
+				value: oEvent.getParameter("fileName") + ";" + this._documentNumber
+			});
+			oEvent.getParameters().addHeaderParameter(oCustomerHeaderSlug);
+		},
+
+		onUploadComplete: function(oEvent) {
+			this.getModel("createView").refresh(true);
+		},
+
+***** UploadCollection event handlers *****
+*******************************************
+
+**************************************
+***** on document create success *****
+
+		onOrderPress: function(oEvent) {
+			var oViewModel = this.getModel("createView");
+			oViewModel.setProperty("/page/busy", true);
+			var aItPoItemSet = oViewModel.getProperty("/data/items").map(function(oItem) {
+				return {
+					Matnr: oItem.Matnr,
+					Menge: this.convertToFloat(oItem.Menge, 2),
+					Brtwr: this.convertToFloat(oItem.Brtwr, 2),
+					TaxPercent: oItem.TaxPercent
+				};
+			}.bind(this));
+			var oDocument = {
+				Application: "SOSPO",
+				Aedat: oViewModel.getProperty("/data/Aedat"),
+				Ihrez: oViewModel.getProperty("/data/Ihrez"),
+				ItPoItemSet: aItPoItemSet
+			};
+			this.getView().getModel().create("/IsPoHeadSet", oDocument, {
+				success: function(oData, oResponse) {
+					oViewModel.setProperty("/page/editable", false);
+					this._documentNumber = oData.Ebeln;
+					this.startUpload();
+					oViewModel.setProperty("/page/busy", false);
+					sap.m.MessageToast.show(this.getResourceBundle().getText("savedMessage"));
+				}.bind(this),
+				error: function(oError) {
+					oViewModel.setProperty("/page/busy", false);
+				}.bind(this)
+			});
+
+		},
+    
+***** on document create success *****
+**************************************
