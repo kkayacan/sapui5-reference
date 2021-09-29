@@ -1,0 +1,61 @@
+<mvc:View xmlns:html="http://www.w3.org/1999/xhtml" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:f="sap.ui.layout.form"
+	xmlns:core="sap.ui.core" controllerName="co.arteis.sospo.controller.Create" displayBlock="true">
+	<App>
+		<pages>
+			<Page id="page" title="{i18n>title}" showFooter="true" floatingFooter="true" busy="createView&gt;/page/busy" enableScrolling="true"
+				showNavButton="true" navButtonPress=".onNavButtonPress">
+				<content>
+					<Table id="itemsTable" items="{createView>/data/items}" sticky="ColumnHeaders" width="auto" class="sapUiResponsiveMargin"
+						mode="{= ${createView>/page/editable} ? 'Delete' : 'None' }" delete=".onItemDelete">
+						<columns>
+							<Column>
+								<Text text="{i18n>Matnr}"/>
+							</Column>
+							<Column minScreenWidth="Tablet" demandPopin="true">
+								<Text text="{i18n>Maktx}"/>
+							</Column>
+							<Column hAlign="End" minScreenWidth="Tablet" demandPopin="true">
+								<Text text="{i18n>Menge}"/>
+							</Column>
+							<Column hAlign="End" minScreenWidth="Tablet" demandPopin="true">
+								<Text text="{i18n>Brtwr}"/>
+							</Column>
+							<Column hAlign="End" minScreenWidth="Tablet" demandPopin="true">
+								<Text text="{i18n>TaxPercent}"/>
+							</Column>
+						</columns>
+						<items>
+							<ColumnListItem>
+								<cells>
+									<Input value="{createView>Matnr}" maxLength="18" editable="{createView>/page/editable}" name="Matnr" showValueHelp="true"
+										valueHelpRequest=".onValueHelpRequest" change=".onMatnrChange"/>
+									<Text text="{createView>Maktx}"/>
+									<Input
+										value="{path:'createView>Menge', type:'sap.ui.model.odata.type.Decimal', formatOptions:{minFractionDigits:0,maxFractionDigits:2}, constraints:{precision:13,scale:2}}"
+										description="{createView>Meins}" editable="{createView>/page/editable}"/>
+									<Input
+										value="{path:'createView>Brtwr', type:'sap.ui.model.odata.type.Decimal', formatOptions:{minFractionDigits:2,maxFractionDigits:2}, constraints:{precision:14,scale:2}}"
+										editable="{createView>/page/editable}"/>
+									<Select selectedKey="{createView>TaxPercent}" editable="{createView>/page/editable}" wrapItemsText="true"
+										items="{ path: '/EtTaxSet', sorter: { path: 'Percent' } }">
+										<items>
+											<core:Item key="{Percent}" text="{Percent} {Text1}"/>
+										</items>
+									</Select>
+								</cells>
+							</ColumnListItem>
+						</items>
+					</Table>
+				</content>
+				<footer>
+					<OverflowToolbar>
+						<Button text="{i18n>NewOrder}" type="Emphasized" press=".onNewOrderPress" visible="{= !${createView>/page/editable} }"/>
+						<ToolbarSpacer/>
+						<Button text="{i18n>NewItem}" press=".onNewItemPress" visible="{createView>/page/editable}"/>
+						<Button text="{i18n>PlaceOrder}" type="Emphasized" press=".onOrderPress" visible="{createView>/page/editable}"/>
+					</OverflowToolbar>
+				</footer>
+			</Page>
+		</pages>
+	</App>
+</mvc:View>
