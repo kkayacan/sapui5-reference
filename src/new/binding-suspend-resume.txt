@@ -1,0 +1,13 @@
+					<Table id="table" width="auto" items="{ path: '/EtVendorMaterialSet', suspended: true }" noDataText="{worklistView>/tableNoDataText}"
+						busyIndicatorDelay="{worklistView>/tableBusyDelay}" growing="true" growingScrollToLoad="true" updateFinished="onUpdateFinished">
+
+
+		onLifnrChange: function(oEvent) {
+			var oItemBinding = this.byId("table").getBinding("items");
+			oItemBinding.filter(new sap.ui.model.Filter({
+				path: "Lifnr",
+				operator: sap.ui.model.FilterOperator.EQ,
+				value1: this.getModel("worklistView").getProperty("/data/Lifnr")
+			}));
+			oItemBinding.resume();
+		},
