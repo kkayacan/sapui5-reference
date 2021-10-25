@@ -159,7 +159,8 @@
 			"type": "Input",
 			"path": "Property",
 			"operator": "EQ",
-			"showValueHelp": false
+			"showValueHelp": false,
+			"onInputCreate": "onPropertyInputCreate"
 		}, {
 			"type": "Input",
 			"path": "Property",
