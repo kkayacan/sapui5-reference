@@ -1,0 +1,8 @@
+			this.getModel().setHeaders({
+				fapp: this._appType
+			});
+
+**********************************************
+
+DATA(lt_reqh) = CAST /iwbep/if_mgw_dp_int_facade( /iwbep/if_mgw_conv_srv_runtime~get_dp_facade( ) )->get_request_header( ).
+ZCL_FIORI_UTIL=>apptype = VALUE #( lt_reqh[ name = 'fapp' ]-value OPTIONAL ).
