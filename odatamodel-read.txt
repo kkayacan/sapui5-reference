@@ -1,0 +1,28 @@
+				this.getModel().read("/EsRequisitionSet('" + sObjectId + "')", {
+					urlParameters: {
+						"$expand": "EtRequisitionItemSet/EtRequisitionAccountSetFromItem"
+					},
+					success: function(oData, oResponse) {
+						oViewModel.getData().doc = oData;
+						oViewModel.refresh(true);
+						oViewModel.setProperty("/busy", false);
+					}.bind(this),
+					error: function(oResponse) {
+						oViewModel.setProperty("/busy", false);
+					}
+				});
+
+aItmkeyFilter.push(new Filter("Itmkey", FilterOperator.EQ, sItmkey));
+this.getModel().read("/EtContractDataSet", {
+						filters: aItmkeyFilter,
+						urlParameters: {
+							"$expand": "EtContractDataAccSet"
+						},
+						success: function(oData, oResponse) {
+
+							sap.ui.core.BusyIndicator.hide();
+						}.bind(this),
+						error: function(oResponse) {
+							sap.ui.core.BusyIndicator.hide();
+						}
+					});
