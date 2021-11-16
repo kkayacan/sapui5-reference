@@ -1,0 +1,1 @@
+<m:SegmentedButtonItem icon="{ value: 'co/arteis/feedback/img/scale-1.png', formatter: 'sap.ui.require.toUrl' }"/>
