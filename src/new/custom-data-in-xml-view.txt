@@ -1,0 +1,10 @@
+<mvc:View displayBlock="true" controllerName="co.arteis.feedback.controller.Detail" height="100%" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" 
+xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
+									<List id="KriterList" items="{path: '/get_kriterlerSet', suspended: true}">
+										<StandardListItem title="{KriterText}" type="Navigation" press=".onKriterItemPress" app:KriterKey="{Kriter}"/>
+									</List>
+</mvc:View>
+
+		onKriterItemPress: function(oEvent) {
+			var sKriterKey = oEvent.getSource().data("KriterKey");
+		},
