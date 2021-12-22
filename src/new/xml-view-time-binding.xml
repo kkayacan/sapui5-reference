@@ -1,0 +1,2 @@
+
+							<Text text="{ path: 'Eruhr', type: 'sap.ui.model.odata.type.Time', formatOptions: { pattern : 'HH:mm:ss' } }"/>
