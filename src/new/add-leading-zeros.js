@@ -1,0 +1,1 @@
+sBelnr = sBelnr.padStart(10, "0");
