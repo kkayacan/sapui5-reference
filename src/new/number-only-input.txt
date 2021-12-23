@@ -1,0 +1,18 @@
+				<fb:FilterBar reset="onReset" search="onSearch" showRestoreButton="false" showClearButton="false">
+					<fb:filterGroupItems>
+						<fb:FilterGroupItem groupName="__$INTERNAL$" name="A" label="{i18n>Belnr}" partOfCurrentVariant="true" visibleInFilterBar="true">
+							<fb:control>
+								<Input id="BelnrInput" maxLength="10" liveChange=".onBelnrInputLiveChange" required="true"/>
+							</fb:control>
+						</fb:FilterGroupItem>
+					</fb:filterGroupItems>
+				</fb:FilterBar>
+
+*******************************************************************************************************************************
+
+		onBelnrInputLiveChange: function(oEvent) {
+			var _oInput = oEvent.getSource();
+			var val = _oInput.getValue();
+			val = val.replace(/[^\d]/g, '');
+			_oInput.setValue(val);
+		}
