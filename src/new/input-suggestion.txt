@@ -1,0 +1,11 @@
+								<MultiInput id="CategoryMultiInput" suggestionItems="{/EtCategorySet}" showValueHelp="false" suggest=".onCategorySuggest">
+									<core:Item id="CategoryMultiInputItem" key="{Category}" text="{Categoryname}"/>
+								</MultiInput>
+
+***********************************************************
+
+		onCategorySuggest: function (oEvent) {
+			oEvent.getSource().getBinding("suggestionItems").filter([new sap.ui.model.Filter("Categoryname", sap.ui.model.FilterOperator.Contains,
+				oEvent.getParameter(
+					"suggestValue").toUpperCase())]);
+		},
