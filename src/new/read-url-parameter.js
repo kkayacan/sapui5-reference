@@ -1,0 +1,1 @@
+this._appType = window.location.href.substr(window.location.href.indexOf("fapp") + 5, 1);
