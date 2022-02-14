@@ -9,10 +9,10 @@ sap.ui.define([
 	"sap/m/Dialog",
 	"sap/m/Bar",
 	"sap/m/Text"
-], function(UI5Object, MessageBox, JSONModel, MessageType, MessageItem, MessageView, Button, Dialog, Bar, Text) {
+], function (UI5Object, MessageBox, JSONModel, MessageType, MessageItem, MessageView, Button, Dialog, Bar, Text) {
 	"use strict";
 
-	return UI5Object.extend("co.arteis.appname.controller.ErrorHandler", {
+	return UI5Object.extend("co.arteis.rsimaintcds.controller.ErrorHandler", {
 
 		/**
 		 * Handles application errors by automatically attaching to the model events and displaying errors when needed.
@@ -21,28 +21,33 @@ sap.ui.define([
 		 * @public
 		 * @alias com.socar.centralpr.controller.ErrorHandler
 		 */
-		constructor: function(oComponent) {
+		constructor: function (oComponent, sModelName) {
 			this._oResourceBundle = oComponent.getModel("i18n").getResourceBundle();
 			this._oComponent = oComponent;
-			this._oModel = oComponent.getModel();
+			if (sModelName) {
+				this._oModel = oComponent.getModel(sModelName);
+			} else {
+				this._oModel = oComponent.getModel();
+			}
 			this._bMessageOpen = false;
 			this._sErrorText = this._oResourceBundle.getText("errorText");
 			if (this._sErrorText === "errorText") {
 				this._sErrorText = "ERROR";
 			}
 
-			this._oModel.attachMetadataFailed(function(oEvent) {
+			this._oModel.attachMetadataFailed(function (oEvent) {
 				var oParams = oEvent.getParameters();
 				this._showServiceError(oParams.response);
 			}, this);
 
-			this._oModel.attachRequestFailed(function(oEvent) {
+			this._oModel.attachRequestFailed(function (oEvent) {
 				var oParams = oEvent.getParameters();
 				// An entity that was not found in the service is also throwing a 404 error in oData.
 				// We already cover this case with a notFound target so we skip it here.
 				// A request that cannot be sent to the server is a technical error that we have to handle though
-				if (oParams.response.statusCode !== "404" || (oParams.response.statusCode === 404 && oParams.response.responseText.indexOf(
-						"Cannot POST") === 0)) {
+				if (oParams.response.statusCode !== "404" || (oParams.response.statusCode === "404" && oParams.response.responseText.indexOf(
+						"Cannot POST") === 0) || (oParams.response.statusCode === "404" && oParams.response.responseText.indexOf(
+						"Resource not found for the segment") > 0)) {
 					this._showServiceError(oParams.response);
 				}
 			}, this);
@@ -54,7 +59,7 @@ sap.ui.define([
 		 * @param {string} sDetails a technical error to be displayed on request
 		 * @private
 		 */
-		_showServiceError: function(sDetails) {
+		_showServiceError: function (sDetails) {
 			if (this._bMessageOpen) {
 				return;
 			}
@@ -62,7 +67,7 @@ sap.ui.define([
 			this._displayMessageView(this._getMessageList(sDetails));
 		},
 
-		_getMessageList: function(oDetails) {
+		_getMessageList: function (oDetails) {
 			var aList = [];
 			if (oDetails.hasOwnProperty("responseText")) {
 				var sResponseText = oDetails.responseText;
@@ -122,25 +127,25 @@ sap.ui.define([
 			return aList;
 		},
 
-		_displayMessageView: function(aMsg) {
+		_displayMessageView: function (aMsg) {
 			var that = this;
 
-			aMsg.forEach(function(oMsg) {
+			aMsg.forEach(function (oMsg) {
 				switch (oMsg.severity) {
-					case "error":
-						oMsg.severity = MessageType.Error;
-						break;
-					case "information":
-						oMsg.severity = MessageType.Information;
-						break;
-					case "success":
-						oMsg.severity = MessageType.Success;
-						break;
-					case "warning":
-						oMsg.severity = MessageType.Warning;
-						break;
-					default:
-						oMsg.severity = MessageType.None;
+				case "error":
+					oMsg.severity = MessageType.Error;
+					break;
+				case "information":
+					oMsg.severity = MessageType.Information;
+					break;
+				case "success":
+					oMsg.severity = MessageType.Success;
+					break;
+				case "warning":
+					oMsg.severity = MessageType.Warning;
+					break;
+				default:
+					oMsg.severity = MessageType.None;
 				}
 			});
 
@@ -160,7 +165,7 @@ sap.ui.define([
 			var oBackButton = new Button({
 				icon: sap.ui.core.IconPool.getIconURI("nav-back"),
 				visible: false,
-				press: function() {
+				press: function () {
 					that.oMessageView.navigateBack();
 					this.setVisible(false);
 				}
@@ -168,7 +173,7 @@ sap.ui.define([
 
 			this.oMessageView = new MessageView({
 				showDetailsPageHeader: false,
-				itemSelect: function() {
+				itemSelect: function () {
 					oBackButton.setVisible(true);
 				},
 				items: {
@@ -184,7 +189,7 @@ sap.ui.define([
 				content: this.oMessageView,
 				state: "Error",
 				beginButton: new Button({
-					press: function() {
+					press: function () {
 						that._bMessageOpen = false;
 						this.getParent().close();
 					},
