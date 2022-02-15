@@ -1,0 +1,77 @@
+<mvc:View controllerName="co.arteis.labelcds.controller.Worklist" xmlns="sap.m" xmlns:mvc="sap.ui.core.mvc" xmlns:semantic="sap.f.semantic"
+	xmlns:footerbar="sap.ushell.ui.footerbar" xmlns:smartTable="sap.ui.comp.smarttable" xmlns:sfb="sap.ui.comp.smartfilterbar"
+	xmlns:core="sap.ui.core">
+	<semantic:SemanticPage id="page" headerPinnable="false" toggleHeaderOnTitleClick="false">
+		<semantic:titleHeading>
+			<Title text="{i18n>worklistTitle}" level="H2"/>
+		</semantic:titleHeading>
+		<semantic:content>
+			<Panel id="worklistPagePanel">
+				<sfb:SmartFilterBar id="smartFilterBar" persistencyKey="smartFilterBarPerKey" considerSelectionVariants="true" entitySet="ZPOSAEC_LABEL"
+					enableBasicSearch="false" basicSearchFieldName="NodeName" showClearButton="true">
+					<!-- layout data used to make the table growing but the filter bar fixed -->
+					<sfb:layoutData>
+						<FlexItemData id="SmartFilterFlexItemData" shrinkFactor="0"/>
+					</sfb:layoutData>
+					<sfb:controlConfiguration>
+						<sfb:ControlConfiguration key="ArticleFilter" index="1" label="{i18n>Materialnumber}" groupId="_BASIC" visibleInAdvancedArea="true">
+							<sfb:customControl>
+								<MultiInput id="materialNumberMultiInput" showValueHelp="true" valueHelpRequest=".onMaterialValueHelpRequest"/>
+							</sfb:customControl>
+						</sfb:ControlConfiguration>
+						<sfb:ControlConfiguration id="ean11FilterControlConfig" key="ean11" index="2" groupId="_BASIC" visibleInAdvancedArea="true"/>
+						<sfb:ControlConfiguration id="changedateFilterControlConfig" key="changedate" index="3" groupId="_BASIC" visibleInAdvancedArea="true"/>
+						<sfb:ControlConfiguration id="changetypeFilterControlConfig" key="changetype" index="4" groupId="_BASIC" visibleInAdvancedArea="true"/>
+						<sfb:ControlConfiguration id="hasstockFilterControlConfig" key="has_stock" index="5" groupId="_BASIC" visibleInAdvancedArea="true"/>
+					</sfb:controlConfiguration>
+				</sfb:SmartFilterBar>
+				<smartTable:SmartTable id="table" entitySet="ZPOSAEC_LABEL" smartFilterId="smartFilterBar" tableType="ResponsiveTable"
+					useExportToExcel="true" beforeExport="onBeforeExport" useVariantManagement="true" useTablePersonalisation="true"
+					header="{worklistView>/worklistTableTitle}" showRowCount="true" persistencyKey="RsiSmartTable" enableAutoBinding="false" demandPopin="true"
+					initiallyVisibleFields="changedate,materialnumber,materialname,changetypetext,regularprice,firstcond,secondcond,thirdcond,fourthcond,fifthcond,sixthcond,seventhcond,salesamount,expiry_date"
+					requestAtLeastFields="retailstoreid,materialnumber" class="sapUiResponsiveContentPadding" beforeRebindTable=".onBeforeRebindTable">
+					<Table growing="true" growingScrollToLoad="true">
+						<columns>
+							<Column id="QuanColumn" hAlign="End">
+								<customData>
+									<core:CustomData key="p13nData"
+										value='\{"columnKey": "QUANTITY_HIGH_OUT","columnIndex":"190", "leadingProperty": ["QUANTITY_LOW_OUT","QUANTITY_HIGH_OUT","QUANTITY_LOW_LIM","QUANTITY_HIGH_LIM","QUANTITY_LOW_ON","QUANTITY_HIGH_ON"]}'/>
+								</customData>
+								<Text text="{i18n>Quantity}"/>
+							</Column>
+						</columns>
+						<items>
+							<ColumnListItem type="Navigation" press=".onPress">
+								<cells>
+									<VBox id="QuantityVBox">
+										<HBox id="QuantityOutHBox" justifyContent="End">
+											<ObjectStatus id="QuantityOutObjectStatus" state="Error" visible="{= !!${QUANTITY_HIGH_OUT} }"
+												text="{ path: 'QUANTITY_LOW_OUT', formatter: '.formatter.numberUnit' } - { path: 'QUANTITY_HIGH_OUT', formatter: '.formatter.numberUnit' }"/>
+										</HBox>
+										<HBox id="QuantityLimHBox" justifyContent="End">
+											<ObjectStatus id="QuantityLimObjectStatus" state="Warning" visible="{= !!${QUANTITY_HIGH_LIM} }"
+												text="{ path: 'QUANTITY_LOW_LIM', formatter: '.formatter.numberUnit' } - { path: 'QUANTITY_HIGH_LIM', formatter: '.formatter.numberUnit' }"/>
+										</HBox>
+										<HBox id="QuantityOnHBox" justifyContent="End">
+											<ObjectStatus id="QuantityOnObjectStatus" state="Success" visible="{= !!${QUANTITY_HIGH_ON} }"
+												text="{ path: 'QUANTITY_LOW_ON', formatter: '.formatter.numberUnit' } - { path: 'QUANTITY_HIGH_ON', formatter: '.formatter.numberUnit' }"/>
+										</HBox>
+									</VBox>
+								</cells>
+							</ColumnListItem>
+						</items>
+					</Table>
+				</smartTable:SmartTable>
+			</Panel>
+		</semantic:content>
+	</semantic:SemanticPage>
+</mvc:View>
+
+*************************************************************************************
+
+		onBeforeRebindTable: function (oEvent) {
+			var mBindingParams = oEvent.getParameter("bindingParams");
+			this.getView().byId("smartFilterBar").getControlByKey("ArticleFilter").getTokens().forEach(function (oToken) {
+				mBindingParams.filters.push(new Filter("materialnumber", FilterOperator.EQ, oToken.getKey().padStart(18, "0")));
+			});
+		},
