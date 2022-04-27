@@ -12,7 +12,7 @@ sap.ui.define([
 ], function (UI5Object, MessageBox, JSONModel, MessageType, MessageItem, MessageView, Button, Dialog, Bar, Text) {
 	"use strict";
 
-	return UI5Object.extend("co.arteis.rsimaintcds.controller.ErrorHandler", {
+	return UI5Object.extend("co.arteis.sfstckmaintcds.controller.ErrorHandler", {
 
 		/**
 		 * Handles application errors by automatically attaching to the model events and displaying errors when needed.
@@ -47,7 +47,7 @@ sap.ui.define([
 				// A request that cannot be sent to the server is a technical error that we have to handle though
 				if (oParams.response.statusCode !== "404" || (oParams.response.statusCode === "404" && oParams.response.responseText.indexOf(
 						"Cannot POST") === 0) || (oParams.response.statusCode === "404" && oParams.response.responseText.indexOf(
-						"Resource not found for the segment") > 0)) {
+						"Resource not found for the segment") > 0) || (oEvent.getParameter("method") === "DELETE")) {
 					this._showServiceError(oParams.response);
 				}
 			}, this);
