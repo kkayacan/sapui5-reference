@@ -1,0 +1,16 @@
+		"models": {
+			"i18n": {
+				"type": "sap.ui.model.resource.ResourceModel",
+				"settings": {
+					"bundleName": "co.arteis.zstockreport.i18n.i18n"
+				}
+			},
+			"": {
+				"dataSource": "mainService",
+				"settings": {
+					"defaultCountMode": "InlineRepeat",
+					"useBatch": false
+				},
+				"preload": true
+			}
+		},
