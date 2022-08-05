@@ -1,0 +1,25 @@
+{
+	"_version": "1.4.0",
+	"sap.app": {
+
+	},
+	"sap.ui": {
+		"fullWidth": true,
+		"technology": "UI5",
+		"icons": {
+
+		},
+		"deviceTypes": {
+
+		},
+		"supportedThemes": [
+
+		]
+	},
+	"sap.ui5": {
+
+	},
+	"sap.platform.abap": {
+
+	}
+}
