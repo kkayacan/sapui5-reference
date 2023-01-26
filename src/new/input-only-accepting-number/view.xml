@@ -1,0 +1,1 @@
+<Input value="{path: 'turkishLira>count'}" textAlign="End" liveChange=".onCashCountLiveChange"/>
