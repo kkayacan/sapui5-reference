@@ -1,0 +1,27 @@
+				<Table id="bankNotesTable" width="auto" items="{ path: 'worklistView>/data/bankNotes' }" noDataText="{worklistView>/tableNoDataText}"
+					busy="{worklistView>/state/banknotesBusy}" busyIndicatorDelay="{worklistView>/tableBusyDelay}" growing="false"
+					class="sapUiMediumMarginBottom" keyboardMode="Edit">
+					<columns>
+						<Column hAlign="End">
+							<Text text="{i18n>Nakit}"/>
+							<footer><Text text="{i18n>Toplam}"/></footer>
+						</Column>
+						<Column hAlign="End">
+							<Text text="{i18n>Adet}"/>
+						</Column>
+						<Column hAlign="End">
+							<Text text="{i18n>Toplam}"/>
+							<footer><Text
+								text="{ path: 'worklistView>/data/cashGrandTotal', type: 'sap.ui.model.type.Float', formatOptions: {groupingEnabled: true, decimals: 2} }"/></footer>
+						</Column>
+					</columns>
+					<items>
+						<ColumnListItem>
+							<cells>
+								<Text text="{worklistView>Name}"/>
+								<Input value="{path: 'worklistView>Count'}" textAlign="End" liveChange=".onCashCountLiveChange"></Input>
+								<Text text="{ path: 'worklistView>Total', type: 'sap.ui.model.type.Float', formatOptions: {groupingEnabled: true, decimals: 2} }"/>
+							</cells>
+						</ColumnListItem>
+					</items>
+				</Table>
