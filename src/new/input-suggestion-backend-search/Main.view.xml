@@ -1,0 +1,33 @@
+<mvc:View controllerName="co.bim.zfio_cashsheet.controller.Worklist" xmlns="sap.m" xmlns:mvc="sap.ui.core.mvc"
+	xmlns:semantic="sap.f.semantic" xmlns:footerbar="sap.ushell.ui.footerbar" xmlns:f="sap.ui.layout.form" xmlns:core="sap.ui.core"
+	xmlns:l="sap.ui.layout">
+	<semantic:SemanticPage id="page" headerPinnable="false" toggleHeaderOnTitleClick="false" showFooter="true">
+		<semantic:titleHeading>
+			<Title text="{i18n>worklistTitle}"/>
+		</semantic:titleHeading>
+		<semantic:content>
+			<Panel>
+						<Label text="{i18n>magazaNo}"/>
+						<Input id="magazaInput" type="Text" placeholder="{i18n>magazaAra}" showSuggestion="true" suggestionRows="{worklistView>/data/storeInputSuggestions}" suggest=".onStoreSuggest"
+						    startSuggestion="2" maxLength="4" change=".onMagazaChange">
+							<suggestionColumns>
+								<Column>
+									<Label text="{i18n>magazaNo}"/>
+								</Column>
+								<Column>
+									<Label text="{i18n>magazaAdi}"/>
+								</Column>
+							</suggestionColumns>
+							<suggestionRows>
+								<ColumnListItem>
+									<cells>
+										<Text text="{worklistView>Retailstoreid}"/>
+										<Text text="{worklistView>Retailstorename}"/>
+									</cells>
+								</ColumnListItem>
+							</suggestionRows>
+						</Input>
+			</Panel>
+		</semantic:content>
+	</semantic:SemanticPage>
+</mvc:View>
