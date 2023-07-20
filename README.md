@@ -5,4 +5,4 @@ This repository includes working SAPUI5 apps and an **[index](INDEX.md)** of sam
 
 ### Dive into [index](INDEX.md) to browse the samples
 
-###Also check [uncategorized new additions](/src/new/)
+### Also check [uncategorized new additions](/src/new/)
