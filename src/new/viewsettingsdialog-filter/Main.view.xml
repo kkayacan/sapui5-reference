@@ -1,0 +1,38 @@
+			<Table id="table" width="auto" items="{ path: '/EtPosReportSet', suspended: true, groupHeaderFactory: '.getGroupHeader' }" noDataText="{worklistView>/tableNoDataText}"
+				busyIndicatorDelay="{worklistView>/tableBusyDelay}" growing="false" growingScrollToLoad="true" updateFinished="onUpdateFinished">
+				<headerToolbar>
+					<Toolbar>
+						<Title id="tableHeader" text="{worklistView>/worklistTableTitle}"/>
+						<ToolbarSpacer/>
+						<Button tooltip="Filter" icon="sap-icon://filter" press="handleFilterButtonPressed"/>
+					</Toolbar>
+				</headerToolbar>
+				<columns>
+					<Column>
+						<Text text="{i18n>Retailstorename}"/>
+					</Column>
+					<Column>
+						<Text text="{i18n>Businessdaydate}"/>
+					</Column>
+					<Column>
+						<Text text="{i18n>TenderDescription}"/>
+					</Column>
+					<Column>
+						<Text text="{i18n>Transcurrency}"/>
+					</Column>
+					<Column hAlign="End">
+						<Text text="{i18n>Salesamount}"/>
+					</Column>
+				</columns>
+				<items>
+					<ColumnListItem>
+						<cells>
+							<ObjectIdentifier title="{Retailstorename}"/>
+							<ObjectIdentifier title="{ path: 'Businessdaydate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' } }"/>
+							<ObjectIdentifier title="{TenderDescription}"/>
+							<ObjectIdentifier title="{Transcurrency}"/>
+							<ObjectNumber number="{ path: 'Salesamount', formatter: '.formatter.numberUnit' }" unit="{Transcurrency}"/>
+						</cells>
+					</ColumnListItem>
+				</items>
+			</Table>

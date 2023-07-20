@@ -1,0 +1,16 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:u="sap.ui.unified">
+	<ViewSettingsDialog confirm="handleFilterDialogConfirm">
+		<filterItems>
+			<ViewSettingsFilterItem id="RetailstoreidFilterItem" text="{i18n>Retailstoreid}" key="Retailstoreid" multiSelect="true" items="{valueHelp>/EtStoresSet}">
+				<items>
+					<ViewSettingsItem text="{valueHelp>Retailstorename}" key="{valueHelp>Retailstoreid}"/>
+				</items>
+			</ViewSettingsFilterItem>
+			<ViewSettingsCustomItem id="BusinessdaydateFilterItem" text="{i18n>Businessdaydate}" key="Businessdaydate">
+				<customControl>
+					<u:Calendar intervalSelection="true" select=".onCalendarSelect"/>
+				</customControl>
+			</ViewSettingsCustomItem>
+		</filterItems>
+	</ViewSettingsDialog>
+</core:FragmentDefinition>
