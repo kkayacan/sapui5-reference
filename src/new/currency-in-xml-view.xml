@@ -1,0 +1,2 @@
+<Text
+	text="{ parts: ['worklistView>SystemAmount', 'worklistView>Transcurrency'], type: 'sap.ui.model.type.Currency', formatOptions: { preserveDecimals : false } }"/>
