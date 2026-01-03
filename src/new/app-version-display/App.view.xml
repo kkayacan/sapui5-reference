@@ -1,0 +1,5 @@
+<mvc:View xmlns:mvc="sap.ui.core.mvc" controllerName="co.bim.zqm_manageinspectionlots.controller.App" displayBlock="true" xmlns="sap.m"
+	xmlns:core="sap.ui.core">
+	<App id="app" busy="{appView>/busy}" busyIndicatorDelay="{appView>/delay}"/>
+	<Text text="v{appView>/version}" class="versionText sapUiTinyMargin"/>
+</mvc:View>
